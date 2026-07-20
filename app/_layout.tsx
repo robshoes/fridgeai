@@ -4,11 +4,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
+import { initAds } from '../src/features/ads/initAds';
 import { OnboardingProvider, useOnboarding } from '../src/features/onboarding/storage';
 import { i18n } from '../src/i18n';
 import { initSentry } from '../src/services/sentry';
 
 initSentry();
+initAds();
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();

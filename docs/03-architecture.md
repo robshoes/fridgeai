@@ -50,6 +50,7 @@ Principio cardine: **il client (app React Native) non comunica mai direttamente 
 - **Localizzazione**: libreria i18n con stringhe esternalizzate fin dal v1 (solo italiano attivo), nessuna stringa hardcoded nei componenti.
 - **Config/segreti**: EAS Secrets + `app.config.ts`; nessuna API key OpenAI presente nel bundle client.
 - **Build/distribuzione**: EAS Build + EAS Update per aggiornamenti OTA su fix non nativi.
+- **Monetizzazione**: `react-native-google-mobile-ads` (banner in Home/Inventario, video con ricompensa per scansioni bonus — vedi PRD §Monetizzazione pubblicitaria). Richiede codice nativo: **non funziona in Expo Go**, serve una development build EAS anche in fase di sviluppo.
 
 ---
 
@@ -82,7 +83,8 @@ fridgeai/
 │   │   │   ├── hooks/
 │   │   │   └── api.ts
 │   │   ├── recipes/
-│   │   └── shopping-list/
+│   │   ├── shopping-list/
+│   │   └── ads/                   # banner + rewarded ad (scansioni bonus)
 │   ├── components/                # componenti UI condivisi (design system)
 │   ├── hooks/                     # hook condivisi non legati a un dominio
 │   ├── services/

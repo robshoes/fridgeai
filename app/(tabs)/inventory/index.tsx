@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 
+import { AppBannerAd } from '../../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import {
   deleteInventoryItem,
@@ -124,6 +125,7 @@ export default function InventoryListScreen() {
       <Pressable style={styles.fab} onPress={() => router.push('/inventory/new')}>
         <Ionicons name="add" size={28} color="#fff" />
       </Pressable>
+      <AppBannerAd />
     </View>
   );
 }
