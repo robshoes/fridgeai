@@ -134,8 +134,8 @@ Principio guida: **costruire prima ciò che è testabile senza AI**, per validar
 
 - Integrazione PostHog con gli eventi definiti in `03-architecture.md` (`user_registered`, `scan_completed`, `inventory_item_confirmed`, `recipe_viewed`, `shopping_list_generated`, `user_returned`).
 - Dashboard/alert di monitoraggio spesa OpenAI (per validare il controllo costi definito nel PRD).
-- Test su dispositivi reali (iOS/Android).
-- Distribuzione beta chiusa via TestFlight / Play Internal Testing.
+- Test su dispositivo reale Android. iOS (dispositivo reale, TestFlight) rimandato alla Fase 9, insieme all'attivazione dell'Apple Developer Program: fino ad allora si resta su Android, dove test e beta sono gratuiti.
+- Distribuzione beta chiusa via Play Internal Testing.
 - Raccolta feedback e fix pre-rilascio.
 
 **Output**: build beta pronta, KPI misurabili dal giorno 1, costi AI sotto controllo.

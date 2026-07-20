@@ -65,6 +65,9 @@ function RootNavigator() {
           options={{ headerShown: true, title: i18n.t('shoppingList.title') }}
         />
       </Stack.Protected>
+      {/* Reached directly via the password-recovery email deep link, before
+          a normal session exists — must stay outside every Protected guard. */}
+      <Stack.Screen name="reset-password" options={{ headerShown: true, title: '' }} />
     </Stack>
   );
 }

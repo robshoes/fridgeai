@@ -39,6 +39,16 @@ export default {
       sentMessage: "Se l'indirizzo esiste, riceverai un'email con le istruzioni.",
       backToLogin: 'Torna al login',
     },
+    resetPassword: {
+      title: 'Imposta una nuova password',
+      newPassword: 'Nuova password',
+      confirmPassword: 'Conferma password',
+      submit: 'Salva password',
+      tooShort: 'La password deve avere almeno 6 caratteri.',
+      mismatch: 'Le due password non coincidono.',
+      invalidLink: 'Questo link non è valido o è scaduto.',
+      requestNewLink: 'Richiedi un nuovo link',
+    },
   },
   tabs: {
     home: 'Home',
