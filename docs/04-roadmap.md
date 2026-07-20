@@ -1,4 +1,4 @@
-# FridgeAI – Roadmap Tecnica (MVP v1)
+# KangKong – Roadmap Tecnica (MVP v1)
 
 Questo documento traduce `01-product-vision.md`, `02-prd.md` e `03-architecture.md` in fasi di sviluppo sequenziali. Ogni fase produce un incremento verificabile; le fasi successive dipendono dal completamento di quelle precedenti.
 

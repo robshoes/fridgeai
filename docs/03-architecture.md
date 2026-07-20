@@ -1,4 +1,4 @@
-# FridgeAI – Architettura Tecnica (MVP v1)
+# KangKong – Architettura Tecnica (MVP v1)
 
 Questo documento descrive l'architettura tecnica scelta per implementare quanto definito in `01-product-vision.md` e `02-prd.md`. Non introduce nuove decisioni di prodotto: traduce quelle già prese in struttura di codice, schema dati e infrastruttura.
 

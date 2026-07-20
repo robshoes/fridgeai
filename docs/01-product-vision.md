@@ -1,8 +1,8 @@
-# FridgeAI – Product Vision (MVP v1)
+# KangKong – Product Vision (MVP v1)
 
 ## Mission
 
-FridgeAI è un assistente intelligente per la cucina che aiuta le persone a ridurre gli sprechi alimentari e a prendere decisioni migliori utilizzando ciò che hanno già nel frigorifero.
+KangKong è un assistente intelligente per la cucina che aiuta le persone a ridurre gli sprechi alimentari e a prendere decisioni migliori utilizzando ciò che hanno già nel frigorifero.
 
 L'obiettivo non è semplicemente creare un inventario degli alimenti, ma trasformare il frigorifero in una fonte di decisioni intelligenti.
 

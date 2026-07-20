@@ -13,7 +13,7 @@ const ADMOB_ANDROID_APP_ID_TEST = 'ca-app-pub-3940256099942544~3347511713';
 const ADMOB_IOS_APP_ID_TEST = 'ca-app-pub-3940256099942544~1458002511';
 
 const config: ExpoConfig = {
-  name: 'fridgeai',
+  name: 'KangKong',
   slug: 'fridgeai',
   owner: 'fridgeai-app',
   version: '1.0.0',
@@ -50,7 +50,7 @@ const config: ExpoConfig = {
       'expo-camera',
       {
         cameraPermission:
-          'FridgeAI usa la fotocamera per scattare foto del frigorifero e riconoscerne il contenuto.',
+          'KangKong usa la fotocamera per scattare foto del frigorifero e riconoscerne il contenuto.',
         recordAudioAndroid: false,
         barcodeScannerEnabled: false,
       },
@@ -59,7 +59,7 @@ const config: ExpoConfig = {
       'expo-image-picker',
       {
         photosPermission:
-          'FridgeAI accede alla galleria per scegliere una foto del frigorifero al posto della fotocamera.',
+          'KangKong accede alla galleria per scegliere una foto del frigorifero al posto della fotocamera.',
         // No cameraPermission here: `false` actively strips the manifest
         // entry, which also removes the CAMERA permission expo-camera's
         // own plugin just added (manifest merge doesn't care which plugin

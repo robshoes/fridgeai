@@ -1,4 +1,4 @@
-# FridgeAI – Product Requirements Document (PRD)
+# KangKong – Product Requirements Document (PRD)
 
 Version: 1.0
 

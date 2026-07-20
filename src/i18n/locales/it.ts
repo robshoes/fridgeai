@@ -3,7 +3,7 @@
 // new language ships — no structural change needed elsewhere in the app.
 export default {
   common: {
-    appName: 'FridgeAI',
+    appName: 'KangKong',
     loading: 'Caricamento…',
     genericError: 'Qualcosa è andato storto. Riprova.',
     networkError: 'Nessuna connessione a Internet. Riprova quando torni online.',
@@ -12,7 +12,7 @@ export default {
     cancel: 'Annulla',
   },
   onboarding: {
-    description: "Apri il frigorifero. Scatta una foto. L'AI pensa al resto.",
+    description: 'Apri il frigorifero. Scatta una foto. Al resto pensiamo noi.',
     start: 'Inizia',
   },
   auth: {
@@ -114,15 +114,15 @@ export default {
   },
   scanner: {
     permissionExplanation:
-      'FridgeAI ha bisogno della fotocamera per riconoscere gli alimenti. Puoi concederla dalle impostazioni, oppure scegliere una foto dalla galleria.',
+      'KangKong ha bisogno della fotocamera per riconoscere gli alimenti. Puoi concederla dalle impostazioni, oppure scegliere una foto dalla galleria.',
     grantPermission: 'Consenti fotocamera',
     openSettings: 'Apri impostazioni',
     pickFromGallery: 'Scegli dalla galleria',
     uploading: 'Caricamento in corso…',
-    analyzing: 'Analisi AI in corso…',
+    analyzing: 'Analisi in corso…',
     remaining: 'Scansioni rimaste oggi: %{count}',
     results: {
-      title: 'Risultati AI',
+      title: 'Risultati',
       lowConfidence: 'Da verificare',
       noItemsFound: 'Non abbiamo riconosciuto alimenti in questa foto.',
       retry: 'Riprova',
