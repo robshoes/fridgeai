@@ -27,10 +27,11 @@ Principio cardine: **il client (app React Native) non comunica mai direttamente 
 **Flusso di scansione** (coerente con la Pipeline AI descritta nel PRD):
 
 1. Il client scatta una foto (una sola per sessione) e la carica nel bucket privato `fridge-scans`.
-2. Il client invoca la Edge Function `analyze-fridge-photo` passando il path dell'immagine.
-3. La funzione scarica l'immagine, chiama OpenAI richiedendo una risposta JSON strutturata (nome, categoria, quantità stimata, unità, confidenza).
-4. Il risultato grezzo viene salvato in `scans` / `scan_items` e restituito al client per la schermata "Risultati AI".
-5. L'utente conferma/modifica/elimina ogni voce; solo gli elementi confermati vengono scritti in `inventory_items`, con unità normalizzata e scadenza stimata per categoria (modificabile).
+2. Il client crea direttamente (via client Supabase, protetto da RLS) una riga in `scans` con `status: pending` e il path dell'immagine, ottenendo uno `scan_id`.
+3. Il client invoca la Edge Function `analyze-fridge-photo` passando lo `scan_id`.
+4. La funzione aggiorna lo stato a `processing`, scarica l'immagine, chiama OpenAI richiedendo una risposta JSON strutturata (nome, categoria, quantità stimata, unità, confidenza).
+5. Il risultato grezzo viene salvato in `scan_items` (stato di `scans` aggiornato a `completed` o `failed`) e restituito al client per la schermata "Risultati AI".
+6. L'utente conferma/modifica/elimina ogni voce; solo gli elementi confermati vengono scritti in `inventory_items`, con unità normalizzata e scadenza stimata per categoria (modificabile).
 
 **Flusso ricette**: la Edge Function `generate-recipes` riceve l'inventario corrente, verifica se esiste una cache valida per quella combinazione di ingredienti (vedi §Cache), altrimenti chiama OpenAI e salva il risultato in cache temporanea. Le ricette non vengono mai persistite in modo permanente, come da PRD.
 
@@ -120,7 +121,6 @@ Tutte le tabelle utente-specifiche hanno **Row Level Security attiva**, con poli
 | id | uuid, PK | = `auth.users.id` |
 | full_name | text | |
 | email | text | |
-| avatar_url | text | nullable |
 | created_at | timestamptz | |
 | updated_at | timestamptz | |
 
@@ -220,13 +220,13 @@ Separare `scan_items` (dati grezzi, non affidabili) da `inventory_items` (dati c
 # Edge Functions
 
 ### `analyze-fridge-photo`
-- **Input**: `scan_id` (o path immagine).
-- **Comportamento**: scarica l'immagine dal bucket privato, invoca OpenAI con function calling/structured output per ottenere un array di alimenti (nome, categoria, quantità, unità, confidenza). Applica la soglia di confidenza definita nel PRD per marcare gli item come "da verificare". Scrive i risultati in `scan_items`.
+- **Input**: `scan_id` (riga già creata dal client con `status: pending`, vedi §Panoramica architetturale).
+- **Comportamento**: aggiorna lo stato a `processing`, scarica l'immagine dal bucket privato, invoca OpenAI con function calling/structured output per ottenere un array di alimenti (nome, categoria, quantità, unità, confidenza). Applica la soglia di confidenza di 0.7 definita nel PRD (§Controllo dei costi AI) per marcare gli item con confidenza inferiore come "da verificare". Scrive i risultati in `scan_items` e aggiorna `scans.status` a `completed` o `failed`.
 - **Output**: elenco `scan_items` con relativo stato, pronto per la schermata di conferma.
 
 ### `generate-recipes`
 - **Input**: elenco ingredienti correnti dell'utente (letti da `inventory_items`).
-- **Comportamento**: calcola l'hash della combinazione ingredienti, verifica `recipe_cache`. Se presente e non scaduta, restituisce il risultato cachato. Altrimenti chiama OpenAI, salva la risposta in `recipe_cache` con TTL, e la restituisce.
+- **Comportamento**: calcola l'hash della combinazione ingredienti (nome + categoria; quantità esclusa dall'hash per evitare invalidazioni su variazioni minime — vedi PRD §Generazione delle ricette), verifica `recipe_cache`. Se presente e non scaduta, restituisce il risultato cachato. Altrimenti chiama OpenAI, salva la risposta in `recipe_cache` con TTL, e la restituisce.
 - **Output**: elenco ricette (titolo, tempo, difficoltà, ingredienti mancanti, categoria per icona) — nessuna immagine generata, come da PRD.
 
 Entrambe le funzioni sono l'unico punto in cui la app tocca OpenAI; le API key OpenAI vivono esclusivamente nei secrets delle Edge Functions.
@@ -237,7 +237,7 @@ Entrambe le funzioni sono l'unico punto in cui la app tocca OpenAI; le API key O
 
 - **Retention immagini**: job schedulato (Supabase Cron / `pg_cron`) che elimina i file in `fridge-scans` più vecchi di 30 giorni, coerente con la sezione Privacy del PRD.
 - **Pulizia cache ricette**: eliminazione delle righe `recipe_cache` con `expires_at` scaduto.
-- **Rate limiting**: controllo lato Edge Function del numero di scansioni/generazioni ricette giornaliere per utente, prima di invocare OpenAI.
+- **Rate limiting**: controllo lato Edge Function del limite di 10 scansioni giornaliere per utente (vedi PRD §Controllo dei costi AI), prima di invocare OpenAI. Le generazioni di ricette non hanno un limite dedicato: sono già contenute dal caching per combinazione esatta di ingredienti.
 
 ---
 
@@ -253,7 +253,7 @@ Mappatura diretta sui KPI della Vision, un evento per metrica:
 | `inventory_item_confirmed` | Inventari creati |
 | `recipe_viewed` | Ricette visualizzate |
 | `shopping_list_generated` | Liste della spesa generate |
-| `user_returned` (sessione a N giorni di distanza) | Tasso di ritorno degli utenti |
+| `user_returned` (sessione a 7 giorni di distanza dalla precedente) | Tasso di ritorno degli utenti |
 
 ---
 

@@ -126,6 +126,7 @@ Persone tra 25 e 45 anni che cucinano regolarmente e vogliono semplificare la ge
 * Supabase (Auth, Database, Storage, Edge Functions)
 * OpenAI API
 * PostHog (analytics)
+* Sentry (error tracking)
 
 ---
 
@@ -157,6 +158,10 @@ Persone tra 25 e 45 anni che cucinano regolarmente e vogliono semplificare la ge
 * Modalità offline
 * Più foto per singola scansione
 * Traduzioni multilingua (previste in versioni future)
+
+Nota: l'esclusione di "Modalità offline" riguarda la possibilità di modificare, scansionare o generare ricette senza connessione. La sola visualizzazione in lettura dei dati già sincronizzati (inventario, lista della spesa) resta disponibile da cache locale anche senza connessione: non è considerata una "modalità offline" ma un requisito minimo di resilienza (vedi PRD).
+
+L'MVP non prevede piani a pagamento né livelli di utenza differenziati: eventuali limiti di utilizzo (es. scansioni giornaliere) si applicano indistintamente a tutti gli utenti, per evitare di costruire un'infrastruttura di billing fuori scope.
 
 ---
 

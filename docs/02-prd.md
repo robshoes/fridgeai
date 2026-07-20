@@ -104,6 +104,7 @@ Ogni alimento contiene:
 - Nome
 - Categoria
 - Quantità
+- Stato (fresco / in scadenza / scaduto / consumato)
 - Data aggiunta
 - Scadenza (se disponibile)
 
@@ -126,6 +127,7 @@ Visualizzare:
 Azioni:
 - Apri ricetta
 - Salva tra i preferiti
+- Filtra per tempo di preparazione e difficoltà
 
 ---
 
@@ -272,9 +274,17 @@ Le ricette saranno generate dinamicamente da OpenAI utilizzando esclusivamente g
 
 Le ricette non saranno salvate permanentemente nel database.
 
-Per ridurre i costi verrà utilizzata una cache temporanea quando possibile, associata alla combinazione di ingredienti disponibili: finché l'inventario non cambia in modo significativo, la stessa risposta viene riutilizzata invece di generarne una nuova.
+Per ridurre i costi verrà utilizzata una cache temporanea quando possibile, associata alla combinazione esatta di ingredienti disponibili (nome + categoria; la quantità è esclusa dal confronto): finché quella combinazione resta invariata, la stessa risposta viene riutilizzata invece di generarne una nuova. Qualsiasi variazione della combinazione (anche l'aggiunta o rimozione di un solo ingrediente) genera una nuova chiamata: non è prevista alcuna soglia di tolleranza, per mantenere il meccanismo semplice ed economico da implementare.
 
 Le ricette non useranno immagini generate dall'AI: verrà mostrata un'icona rappresentativa per categoria, per mantenere bassi i costi ed evitare contenuti non necessari all'MVP.
+
+---
+
+## Deduplica lista della spesa
+
+Quando un ingrediente mancante da una ricetta viene aggiunto alla lista della spesa, viene confrontato con le voci già presenti tramite corrispondenza case-insensitive sul nome, ignorando spazi iniziali/finali (es. "Pomodori" = "pomodori" = " Pomodori "). Non è prevista alcuna normalizzazione semantica (sinonimi, plurali, lingua): è la soluzione più economica per l'MVP, con il limite noto che varianti testuali diverse (es. "pomodoro" vs "pomodori") non vengono unificate.
+
+Se viene trovata una corrispondenza, la quantità viene sommata invece di creare una voce duplicata; altrimenti viene creata una nuova voce con `source: auto_from_recipe`.
 
 ---
 
@@ -319,7 +329,7 @@ Tutte le API Key rimarranno sul server.
 
 ## Gestione errori AI
 
-Se il modello riconosce un alimento con bassa confidenza:
+Se il modello riconosce un alimento con confidenza inferiore a 0.7 (vedi §Controllo dei costi AI):
 
 - il prodotto verrà evidenziato;
 - l'utente potrà modificarlo;
@@ -368,11 +378,14 @@ Le immagini non saranno mai pubbliche.
 
 ## Controllo dei costi AI
 
+L'MVP non prevede un modello a pagamento né piani differenziati: i limiti sotto si applicano a tutti gli utenti allo stesso modo, per controllare i costi senza costruire un'infrastruttura di billing (fuori scope, vedi Vision).
+
 Per limitare i costi operativi:
 
-- limite giornaliero di scansioni per gli utenti Free;
-- caching delle ricette;
-- nessuna nuova richiesta AI se l'inventario non è cambiato;
+- limite di 10 scansioni al giorno per utente; superato il limite, lo Scanner mostra un messaggio con il numero di scansioni residue e l'orario di reset (mezzanotte, fuso orario del dispositivo);
+- soglia di confidenza AI fissata a 0.7 per marcare un elemento come "da verificare" (vedi §Gestione errori AI);
+- caching delle ricette, basato su corrispondenza esatta della combinazione di ingredienti (vedi §Generazione delle ricette);
+- nessuna nuova richiesta AI se la combinazione di ingredienti non è cambiata;
 - tutte le chiamate AI passeranno attraverso Supabase Edge Functions.
 
 ---

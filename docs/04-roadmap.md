@@ -59,7 +59,8 @@ Principio guida: **costruire prima ciò che è testabile senza AI**, per validar
 - Edge Function `analyze-fridge-photo` (chiamata OpenAI con structured output, soglia di confidenza, scrittura `scan_items`).
 - Schermata "Risultati AI": elenco riconosciuto, confidenza, modifica/eliminazione, gestione caso "nessun alimento riconosciuto".
 - Conferma → scrittura in `inventory_items` con unità normalizzata e scadenza stimata.
-- Rate limiting scansioni giornaliere lato Edge Function.
+- Rate limiting scansioni giornaliere lato Edge Function (limite di 10/giorno per utente).
+- Gestione minima di assenza di connessione durante lo Scanner (messaggio di errore chiaro, nessun crash, nessuno stato di caricamento infinito): sufficiente da sola a rispettare i requisiti non funzionali del PRD per questa fase. L'esperienza offline completa su tutte le schermate viene rifinita in Fase 6.
 
 **Output**: flusso completo "scatta foto → AI → conferma → inventario" funzionante e testato.
 
@@ -139,4 +140,5 @@ Pubblicazione su App Store / Play Store. Qualsiasi funzionalità non inclusa in 
 
 - La Fase 2 (inventario manuale) precede deliberatamente la Fase 3 (AI): disaccoppia lo sviluppo di schema dati e UI dal costo e dall'incertezza delle chiamate OpenAI, e produce un'app già utilizzabile a metà roadmap.
 - Le Fasi 3 e 4 sono le uniche a introdurre costi variabili (OpenAI): vanno sempre accompagnate dai relativi controlli (rate limit, cache) definiti nello stesso rilascio, non aggiunti in un secondo momento.
-- La Fase 6 (offline/errori) non va posticipata dopo la beta: senza di essa la Fase 3 non è considerabile completa secondo i requisiti non funzionali del PRD.
+- La Fase 3 include già la gestione minima di assenza di connessione per lo Scanner (nessun crash, messaggio d'errore chiaro), sufficiente a rispettare i requisiti non funzionali del PRD fin da quella fase. La Fase 6 non è quindi un prerequisito mancante per la Fase 3: estende lo stesso comportamento a tutte le schermate (lettura da cache, empty state) e va comunque completata prima della beta, non posticipata dopo.
+
