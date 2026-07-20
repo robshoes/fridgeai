@@ -8,6 +8,7 @@ import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } 
 
 import { useRewardedAd } from '../../../src/features/ads/useRewardedAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
+import { useOnline } from '../../../src/features/network/NetworkProvider';
 import {
   analyzeScan,
   createScan,
@@ -26,6 +27,7 @@ export default function ScannerScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const { show: showRewardedAd } = useRewardedAd();
+  const isOnline = useOnline();
 
   const { data: usage } = useQuery({
     queryKey: ['scan-usage', userId],
@@ -44,6 +46,12 @@ export default function ScannerScreen() {
   }, [permission?.status, requestPermission]);
 
   const handlePhoto = async (localUri: string) => {
+    // PRD Fase 6: no AI action allowed offline — check before spending an
+    // upload attempt, instead of just letting it fail partway through.
+    if (!isOnline) {
+      Alert.alert(i18n.t('common.networkError'));
+      return;
+    }
     setIsProcessing(true);
     try {
       const imagePath = await uploadScanPhoto(userId, localUri);

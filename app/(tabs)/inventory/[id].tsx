@@ -14,6 +14,7 @@ import {
   type InventoryItemFormValues,
 } from '../../../src/features/inventory/InventoryItemForm';
 import { i18n } from '../../../src/i18n';
+import { showErrorAlert } from '../../../src/utils/network';
 import type { UnitFamily } from '../../../src/utils/units';
 
 export default function EditInventoryItemScreen() {
@@ -45,6 +46,7 @@ export default function EditInventoryItemScreen() {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
       router.back();
     },
+    onError: showErrorAlert,
   });
 
   const deleteMutation = useMutation({
@@ -53,6 +55,7 @@ export default function EditInventoryItemScreen() {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
       router.back();
     },
+    onError: showErrorAlert,
   });
 
   const handleDelete = () => {

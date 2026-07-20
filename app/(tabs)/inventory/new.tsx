@@ -9,6 +9,7 @@ import {
   type InventoryItemFormValues,
 } from '../../../src/features/inventory/InventoryItemForm';
 import { i18n } from '../../../src/i18n';
+import { showErrorAlert } from '../../../src/utils/network';
 
 export default function NewInventoryItemScreen() {
   const { session } = useAuth();
@@ -35,6 +36,7 @@ export default function NewInventoryItemScreen() {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
       router.back();
     },
+    onError: showErrorAlert,
   });
 
   if (isLoading || !categories) {

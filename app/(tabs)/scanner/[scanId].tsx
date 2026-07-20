@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 
+import { EmptyState } from '../../../src/components/EmptyState';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import {
   listCategories,
@@ -66,10 +67,12 @@ export default function ScanResultsScreen() {
   if (scanItems.length === 0) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.emptyText}>{i18n.t('scanner.results.noItemsFound')}</Text>
-        <Pressable style={styles.button} onPress={() => router.replace('/scanner')}>
-          <Text style={styles.buttonText}>{i18n.t('scanner.results.retry')}</Text>
-        </Pressable>
+        <EmptyState
+          icon="search-outline"
+          message={i18n.t('scanner.results.noItemsFound')}
+          actionLabel={i18n.t('scanner.results.retry')}
+          onAction={() => router.replace('/scanner')}
+        />
         <Pressable style={styles.secondaryButton} onPress={() => router.push('/inventory/new')}>
           <Text style={styles.secondaryButtonText}>{i18n.t('scanner.results.addManually')}</Text>
         </Pressable>
@@ -220,14 +223,6 @@ function ResultsList({
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
-  emptyText: { textAlign: 'center', fontSize: 16 },
-  button: {
-    backgroundColor: '#2e7d32',
-    borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-  },
-  buttonText: { color: '#fff', fontWeight: '600' },
   secondaryButton: { paddingVertical: 8 },
   secondaryButtonText: { color: '#2e7d32', fontWeight: '600' },
   list: { padding: 16, gap: 12 },

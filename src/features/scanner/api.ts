@@ -93,3 +93,15 @@ export async function grantScanBonus(userId: string) {
   const { error } = await supabase.from('scan_bonus_grants').insert({ user_id: userId });
   if (error) throw error;
 }
+
+export async function getLastScan(userId: string) {
+  const { data, error } = await supabase
+    .from('scans')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}

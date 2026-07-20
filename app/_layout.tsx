@@ -2,9 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 
+import { OfflineBanner } from '../src/components/OfflineBanner';
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
 import { initAds } from '../src/features/ads/initAds';
+import { NetworkProvider } from '../src/features/network/NetworkProvider';
 import { OnboardingProvider, useOnboarding } from '../src/features/onboarding/storage';
 import { i18n } from '../src/i18n';
 import { initSentry } from '../src/services/sentry';
@@ -18,11 +21,16 @@ const queryClient = new QueryClient();
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <OnboardingProvider>
-          <RootNavigator />
-        </OnboardingProvider>
-      </AuthProvider>
+      <NetworkProvider>
+        <AuthProvider>
+          <OnboardingProvider>
+            <View style={{ flex: 1 }}>
+              <OfflineBanner />
+              <RootNavigator />
+            </View>
+          </OnboardingProvider>
+        </AuthProvider>
+      </NetworkProvider>
     </QueryClientProvider>
   );
 }

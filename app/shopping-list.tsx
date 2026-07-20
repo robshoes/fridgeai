@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { EmptyState } from '../src/components/EmptyState';
 import { useAuth } from '../src/features/auth/AuthProvider';
 import {
   addShoppingListItem,
@@ -12,6 +13,7 @@ import {
   type ShoppingListItem,
 } from '../src/features/shopping-list/api';
 import { i18n } from '../src/i18n';
+import { showErrorAlert } from '../src/utils/network';
 
 export default function ShoppingListScreen() {
   const { session } = useAuth();
@@ -35,17 +37,20 @@ export default function ShoppingListScreen() {
       }
       invalidate();
     },
+    onError: showErrorAlert,
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isChecked }: { id: string; isChecked: boolean }) =>
       setShoppingListItemChecked(id, isChecked),
     onSuccess: invalidate,
+    onError: showErrorAlert,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteShoppingListItem(id),
     onSuccess: invalidate,
+    onError: showErrorAlert,
   });
 
   const handleAdd = () => {
@@ -72,7 +77,9 @@ export default function ShoppingListScreen() {
         data={items ?? []}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.empty}>{i18n.t('shoppingList.empty')}</Text>}
+        ListEmptyComponent={
+          <EmptyState icon="cart-outline" message={i18n.t('shoppingList.empty')} />
+        }
         renderItem={({ item }) => (
           <ShoppingListRow
             item={item}
@@ -134,7 +141,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   list: { paddingHorizontal: 16, gap: 8 },
-  empty: { textAlign: 'center', color: '#666', marginTop: 32 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

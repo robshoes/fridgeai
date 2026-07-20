@@ -13,6 +13,7 @@ import {
   View,
 } from 'react-native';
 
+import { EmptyState } from '../../../src/components/EmptyState';
 import { AppBannerAd } from '../../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import {
@@ -25,6 +26,7 @@ import {
 import { CategoryIcon } from '../../../src/features/inventory/CategoryIcon';
 import { i18n } from '../../../src/i18n';
 import { computeDisplayStatus, type InventoryStatus } from '../../../src/utils/expiry';
+import { showErrorAlert } from '../../../src/utils/network';
 import { formatQuantity, type UnitFamily } from '../../../src/utils/units';
 
 const STATUS_COLOR: Record<InventoryStatus, string> = {
@@ -49,7 +51,7 @@ export default function InventoryListScreen() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteInventoryItem(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inventory', userId] }),
-    onError: (error: Error) => Alert.alert(i18n.t('common.genericError'), error.message),
+    onError: showErrorAlert,
   });
 
   const categoryById = useMemo(() => {
@@ -98,7 +100,14 @@ export default function InventoryListScreen() {
         data={filteredItems}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.empty}>{i18n.t('inventory.empty')}</Text>}
+        ListEmptyComponent={
+          <EmptyState
+            icon="basket-outline"
+            message={i18n.t('inventory.empty')}
+            actionLabel={i18n.t('inventory.addTitle')}
+            onAction={() => router.push('/inventory/new')}
+          />
+        }
         renderItem={({ item }) => {
           const category = item.category_id ? categoryById.get(item.category_id) : undefined;
           const status = computeDisplayStatus(item.expiry_date, item.status);
@@ -141,7 +150,6 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   list: { paddingHorizontal: 16, paddingBottom: 96, gap: 12 },
-  empty: { textAlign: 'center', color: '#666', marginTop: 32 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

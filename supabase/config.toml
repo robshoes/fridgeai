@@ -438,3 +438,16 @@ entrypoint = "./functions/generate-recipes/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/generate-recipes/*.html" ]
+
+[functions.cleanup-scans]
+enabled = true
+# Triggered by pg_cron/pg_net with a secret key (see the retention
+# migration), not a user JWT — auth: 'secret' mode checks the key itself.
+verify_jwt = false
+import_map = "./functions/cleanup-scans/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/cleanup-scans/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/cleanup-scans/*.html" ]

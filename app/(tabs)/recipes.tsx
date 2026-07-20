@@ -13,8 +13,10 @@ import {
   View,
 } from 'react-native';
 
+import { EmptyState } from '../../src/components/EmptyState';
 import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../src/features/auth/AuthProvider';
+import { useOnline } from '../../src/features/network/NetworkProvider';
 import {
   addFavorite,
   generateRecipes,
@@ -26,6 +28,7 @@ import {
 } from '../../src/features/recipes/api';
 import { addIngredientsToShoppingList } from '../../src/features/shopping-list/api';
 import { i18n } from '../../src/i18n';
+import { showErrorAlert } from '../../src/utils/network';
 
 const CATEGORY_ICONS: Record<RecipeCategory, React.ComponentProps<typeof Ionicons>['name']> = {
   primo: 'restaurant-outline',
@@ -52,9 +55,12 @@ export default function RecipesScreen() {
   const [maxDifficulty, setMaxDifficulty] = useState<RecipeDifficulty | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
+  const isOnline = useOnline();
+
   const {
     data: recipes,
     isLoading: isLoadingRecipes,
+    isError: isRecipesError,
     refetch,
     isFetching,
   } = useQuery({
@@ -72,10 +78,12 @@ export default function RecipesScreen() {
   const addFavoriteMutation = useMutation({
     mutationFn: (recipe: Recipe) => addFavorite(userId, recipe),
     onSuccess: invalidateFavorites,
+    onError: showErrorAlert,
   });
   const removeFavoriteMutation = useMutation({
     mutationFn: (id: string) => removeFavorite(id),
     onSuccess: invalidateFavorites,
+    onError: showErrorAlert,
   });
 
   const favoriteRow = (title: string) =>
@@ -108,7 +116,7 @@ export default function RecipesScreen() {
           : i18n.t('recipes.addedToShoppingList'),
       );
     },
-    onError: (error: Error) => Alert.alert(i18n.t('common.genericError'), error.message),
+    onError: showErrorAlert,
   });
 
   const filteredRecipes = useMemo(() => {
@@ -174,7 +182,11 @@ export default function RecipesScreen() {
               </Text>
             </Pressable>
           ))}
-          <Pressable style={styles.filterChip} onPress={() => refetch()} disabled={isFetching}>
+          <Pressable
+            style={styles.filterChip}
+            onPress={() => (isOnline ? refetch() : Alert.alert(i18n.t('common.networkError')))}
+            disabled={isFetching}
+          >
             {isFetching ? (
               <ActivityIndicator size="small" />
             ) : (
@@ -188,15 +200,27 @@ export default function RecipesScreen() {
         <View style={styles.centered}>
           <ActivityIndicator size="large" />
         </View>
+      ) : view === 'all' && isRecipesError && !recipes ? (
+        <View style={styles.centered}>
+          <EmptyState
+            icon="cloud-offline-outline"
+            message={i18n.t('common.networkError')}
+            actionLabel={i18n.t('scanner.results.retry')}
+            onAction={() => refetch()}
+          />
+        </View>
       ) : (
         <FlatList
           data={filteredRecipes}
           keyExtractor={(recipe, index) => `${recipe.title}-${index}`}
           contentContainerStyle={styles.list}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              {view === 'favorites' ? i18n.t('recipes.favoritesEmpty') : i18n.t('recipes.empty')}
-            </Text>
+            <EmptyState
+              icon={view === 'favorites' ? 'heart-outline' : 'restaurant-outline'}
+              message={
+                view === 'favorites' ? i18n.t('recipes.favoritesEmpty') : i18n.t('recipes.empty')
+              }
+            />
           }
           renderItem={({ item }) => {
             const missingCount = item.ingredients.filter((ingredient) => !ingredient.have).length;
@@ -346,7 +370,6 @@ const styles = StyleSheet.create({
   filterText: { color: '#666' },
   filterTextActive: { color: '#2e7d32', fontWeight: '600' },
   list: { paddingHorizontal: 16, paddingBottom: 16, gap: 12 },
-  emptyText: { textAlign: 'center', color: '#666', marginTop: 32 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',

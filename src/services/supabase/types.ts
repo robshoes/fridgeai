@@ -238,7 +238,7 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
-          image_path: string;
+          image_path: string | null;
           raw_ai_response: Json | null;
           status: Database['public']['Enums']['scan_status'];
           user_id: string;
@@ -246,7 +246,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           id?: string;
-          image_path: string;
+          image_path?: string | null;
           raw_ai_response?: Json | null;
           status?: Database['public']['Enums']['scan_status'];
           user_id: string;
@@ -254,7 +254,7 @@ export type Database = {
         Update: {
           created_at?: string;
           id?: string;
-          image_path?: string;
+          image_path?: string | null;
           raw_ai_response?: Json | null;
           status?: Database['public']['Enums']['scan_status'];
           user_id?: string;

@@ -19,6 +19,7 @@ import {
   type Profile,
 } from '../../src/features/profile/api';
 import { i18n } from '../../src/i18n';
+import { showErrorAlert } from '../../src/utils/network';
 
 export default function ProfileScreen() {
   const { session } = useAuth();
@@ -86,9 +87,7 @@ function ProfileForm({ userId, profile, authEmail }: ProfileFormProps) {
         result.emailChangeRequested ? i18n.t('profile.emailChangeSent') : i18n.t('profile.saved'),
       );
     },
-    onError: (error: Error) => {
-      Alert.alert(i18n.t('common.genericError'), error.message);
-    },
+    onError: showErrorAlert,
   });
 
   return (

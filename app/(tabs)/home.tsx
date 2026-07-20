@@ -1,27 +1,198 @@
-import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { useMemo } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { PlaceholderScreen } from '../../src/components/PlaceholderScreen';
+import { EmptyState } from '../../src/components/EmptyState';
 import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
+import { useAuth } from '../../src/features/auth/AuthProvider';
+import { CategoryIcon } from '../../src/features/inventory/CategoryIcon';
+import { listCategories, listInventoryItems } from '../../src/features/inventory/api';
+import { getProfile } from '../../src/features/profile/api';
+import { generateRecipes } from '../../src/features/recipes/api';
+import { getLastScan } from '../../src/features/scanner/api';
 import { i18n } from '../../src/i18n';
+import { computeDisplayStatus } from '../../src/utils/expiry';
 
-// Temporary entry point to the shopping list until the real Home screen
-// (with its own "apri lista della spesa" action) is built in Fase 6.
 export default function HomeScreen() {
+  const { session } = useAuth();
+  const userId = session!.user.id;
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: () => getProfile(userId),
+  });
+  const { data: lastScan } = useQuery({
+    queryKey: ['last-scan', userId],
+    queryFn: () => getLastScan(userId),
+  });
+  const { data: inventory } = useQuery({
+    queryKey: ['inventory', userId],
+    queryFn: () => listInventoryItems(userId),
+  });
+  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: listCategories });
+  const { data: recipes, isLoading: isLoadingRecipes } = useQuery({
+    queryKey: ['recipes', userId],
+    queryFn: generateRecipes,
+  });
+
+  const categoryById = useMemo(() => {
+    const map = new Map((categories ?? []).map((category) => [category.id, category]));
+    return map;
+  }, [categories]);
+
+  const expiringItems = useMemo(() => {
+    return (inventory ?? []).filter((item) => {
+      const status = computeDisplayStatus(item.expiry_date, item.status);
+      return status === 'expiring_soon' || status === 'expired';
+    });
+  }, [inventory]);
+
   return (
-    <View style={styles.container}>
-      <PlaceholderScreen title={i18n.t('tabs.home')}>
-        <Link href="/shopping-list" style={styles.link}>
-          <Text style={styles.linkText}>{i18n.t('shoppingList.title')}</Text>
-        </Link>
-      </PlaceholderScreen>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.greeting}>
+        {profile?.full_name
+          ? i18n.t('home.greeting', { name: profile.full_name })
+          : i18n.t('home.greetingFallback')}
+      </Text>
+
+      <Pressable style={styles.scanButton} onPress={() => router.push('/scanner')}>
+        <Ionicons name="camera-outline" size={22} color="#fff" />
+        <Text style={styles.scanButtonText}>{i18n.t('home.scanButton')}</Text>
+      </Pressable>
+
+      <View style={styles.quickLinks}>
+        <QuickLink
+          icon="basket-outline"
+          label={i18n.t('tabs.inventory')}
+          onPress={() => router.push('/inventory')}
+        />
+        <QuickLink
+          icon="restaurant-outline"
+          label={i18n.t('tabs.recipes')}
+          onPress={() => router.push('/recipes')}
+        />
+        <QuickLink
+          icon="cart-outline"
+          label={i18n.t('shoppingList.title')}
+          onPress={() => router.push('/shopping-list')}
+        />
+      </View>
+
+      <Section title={i18n.t('home.lastScan')}>
+        {lastScan ? (
+          <Text style={styles.sectionText}>
+            {new Date(lastScan.created_at).toLocaleString('it-IT')} ·{' '}
+            {i18n.t(`home.scanStatus.${lastScan.status}`)}
+          </Text>
+        ) : (
+          <Text style={styles.sectionText}>{i18n.t('home.noScansYet')}</Text>
+        )}
+      </Section>
+
+      <Section title={i18n.t('home.expiringSoon')} onViewAll={() => router.push('/inventory')}>
+        {expiringItems.length === 0 ? (
+          <Text style={styles.sectionText}>{i18n.t('home.noExpiring')}</Text>
+        ) : (
+          expiringItems.slice(0, 5).map((item) => {
+            const category = item.category_id ? categoryById.get(item.category_id) : undefined;
+            return (
+              <View key={item.id} style={styles.row}>
+                {category && <CategoryIcon icon={category.icon} color="#f9a825" size={18} />}
+                <Text style={styles.rowText}>{item.name}</Text>
+              </View>
+            );
+          })
+        )}
+      </Section>
+
+      <Section title={i18n.t('home.recommendedRecipes')} onViewAll={() => router.push('/recipes')}>
+        {isLoadingRecipes ? (
+          <ActivityIndicator />
+        ) : !recipes || recipes.length === 0 ? (
+          <EmptyState icon="restaurant-outline" message={i18n.t('recipes.empty')} />
+        ) : (
+          recipes.slice(0, 3).map((recipe) => (
+            <Pressable
+              key={recipe.title}
+              style={styles.row}
+              onPress={() => router.push('/recipes')}
+            >
+              <Ionicons name="restaurant-outline" size={18} color="#2e7d32" />
+              <Text style={styles.rowText}>{recipe.title}</Text>
+            </Pressable>
+          ))
+        )}
+      </Section>
+
       <AppBannerAd />
+    </ScrollView>
+  );
+}
+
+function QuickLink({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable style={styles.quickLink} onPress={onPress}>
+      <Ionicons name={icon} size={22} color="#2e7d32" />
+      <Text style={styles.quickLinkText}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function Section({
+  title,
+  onViewAll,
+  children,
+}: {
+  title: string;
+  onViewAll?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {onViewAll && (
+          <Pressable onPress={onViewAll}>
+            <Text style={styles.viewAll}>{i18n.t('home.viewAll')}</Text>
+          </Pressable>
+        )}
+      </View>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  link: { marginTop: 16 },
-  linkText: { color: '#2e7d32', fontWeight: '600' },
+  container: { padding: 24, gap: 16 },
+  greeting: { fontSize: 24, fontWeight: '700' },
+  scanButton: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2e7d32',
+    borderRadius: 8,
+    paddingVertical: 14,
+  },
+  scanButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  quickLinks: { flexDirection: 'row', justifyContent: 'space-between' },
+  quickLink: { alignItems: 'center', gap: 4 },
+  quickLinkText: { fontSize: 12, color: '#2e7d32', fontWeight: '600' },
+  section: { gap: 8 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sectionTitle: { fontSize: 16, fontWeight: '700' },
+  sectionText: { color: '#666' },
+  viewAll: { color: '#2e7d32', fontWeight: '600', fontSize: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 },
+  rowText: { flex: 1 },
 });
