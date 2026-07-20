@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import { EmptyState } from '../../src/components/EmptyState';
+import { Skeleton } from '../../src/components/Skeleton';
 import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../src/features/auth/AuthProvider';
 import { useOnline } from '../../src/features/network/NetworkProvider';
@@ -28,6 +29,7 @@ import {
 } from '../../src/features/recipes/api';
 import { addIngredientsToShoppingList } from '../../src/features/shopping-list/api';
 import { i18n } from '../../src/i18n';
+import { colors, spacing } from '../../src/theme';
 import { showErrorAlert } from '../../src/utils/network';
 
 const CATEGORY_ICONS: Record<RecipeCategory, React.ComponentProps<typeof Ionicons>['name']> = {
@@ -197,8 +199,10 @@ export default function RecipesScreen() {
       )}
 
       {view === 'all' && isLoadingRecipes ? (
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" />
+        <View style={styles.list}>
+          <RecipeCardSkeleton />
+          <RecipeCardSkeleton />
+          <RecipeCardSkeleton />
         </View>
       ) : view === 'all' && isRecipesError && !recipes ? (
         <View style={styles.centered}>
@@ -226,7 +230,7 @@ export default function RecipesScreen() {
             const missingCount = item.ingredients.filter((ingredient) => !ingredient.have).length;
             return (
               <Pressable style={styles.card} onPress={() => setSelectedRecipe(item)}>
-                <Ionicons name={CATEGORY_ICONS[item.category]} size={28} color="#2e7d32" />
+                <Ionicons name={CATEGORY_ICONS[item.category]} size={28} color={colors.primary} />
                 <View style={styles.cardText}>
                   <Text style={styles.cardTitle}>{item.title}</Text>
                   <Text style={styles.cardSubtitle}>
@@ -241,7 +245,7 @@ export default function RecipesScreen() {
                   <Ionicons
                     name={favoriteRow(item.title) ? 'heart' : 'heart-outline'}
                     size={22}
-                    color="#c62828"
+                    color={colors.danger}
                   />
                 </Pressable>
               </Pressable>
@@ -294,7 +298,7 @@ function RecipeDetail({
       <Pressable style={styles.closeButton} onPress={onClose}>
         <Ionicons name="close" size={28} />
       </Pressable>
-      <Ionicons name={CATEGORY_ICONS[recipe.category]} size={40} color="#2e7d32" />
+      <Ionicons name={CATEGORY_ICONS[recipe.category]} size={40} color={colors.primary} />
       <Text style={styles.detailTitle}>{recipe.title}</Text>
       <Text style={styles.detailSubtitle}>
         {i18n.t('recipes.minutes', { count: recipe.prep_time_minutes })} ·{' '}
@@ -302,7 +306,7 @@ function RecipeDetail({
       </Text>
 
       <Pressable style={styles.favoriteButton} onPress={onToggleFavorite}>
-        <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={20} color="#c62828" />
+        <Ionicons name={isFavorite ? 'heart' : 'heart-outline'} size={20} color={colors.danger} />
         <Text style={styles.favoriteButtonText}>
           {isFavorite ? i18n.t('recipes.unsave') : i18n.t('recipes.save')}
         </Text>
@@ -323,7 +327,7 @@ function RecipeDetail({
           disabled={isAddingMissing}
         >
           {isAddingMissing ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <Text style={styles.addMissingButtonText}>
               {i18n.t('recipes.addMissingToShoppingList')}
@@ -342,61 +346,87 @@ function RecipeDetail({
   );
 }
 
+// Shown while generate-recipes is in flight (roadmap Fase 7: skeleton
+// loading at the recipe-generation wait point) — mirrors the real card's
+// icon + title + subtitle shape instead of a bare spinner.
+function RecipeCardSkeleton() {
+  return (
+    <View style={styles.card}>
+      <Skeleton width={28} height={28} borderRadius={14} />
+      <View style={[styles.cardText, styles.skeletonLines]}>
+        <Skeleton width="70%" height={14} />
+        <Skeleton width="40%" height={12} />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  viewToggle: { flexDirection: 'row', gap: 8, padding: 16 },
+  viewToggle: { flexDirection: 'row', gap: spacing.sm, padding: spacing.lg },
   toggleChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#2e7d32',
+    borderColor: colors.primary,
   },
-  toggleChipActive: { backgroundColor: '#2e7d32' },
-  toggleText: { color: '#2e7d32', fontWeight: '600' },
-  toggleTextActive: { color: '#fff' },
-  filterRow: { paddingHorizontal: 16, marginBottom: 8, flexGrow: 0 },
+  toggleChipActive: { backgroundColor: colors.primary },
+  toggleText: { color: colors.primary, fontWeight: '600' },
+  toggleTextActive: { color: colors.white },
+  filterRow: { paddingHorizontal: spacing.lg, marginBottom: spacing.sm, flexGrow: 0 },
   filterChip: {
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#ccc',
-    marginRight: 8,
+    borderColor: colors.borderStrong,
+    marginRight: spacing.sm,
     justifyContent: 'center',
   },
-  filterChipActive: { backgroundColor: '#e8f5e9', borderColor: '#2e7d32' },
-  filterText: { color: '#666' },
-  filterTextActive: { color: '#2e7d32', fontWeight: '600' },
-  list: { paddingHorizontal: 16, paddingBottom: 16, gap: 12 },
+  filterChipActive: { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+  filterText: { color: colors.textMuted },
+  filterTextActive: { color: colors.primary, fontWeight: '600' },
+  list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, gap: spacing.md },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: colors.border,
     borderRadius: 12,
-    padding: 12,
+    padding: spacing.md,
   },
   cardText: { flex: 1 },
+  skeletonLines: { gap: 6 },
   cardTitle: { fontWeight: '600' },
-  cardSubtitle: { color: '#666', fontSize: 12 },
-  detailContainer: { padding: 24, alignItems: 'center', gap: 8 },
-  closeButton: { position: 'absolute', top: 16, right: 16 },
+  cardSubtitle: { color: colors.textMuted, fontSize: 12 },
+  detailContainer: { padding: spacing.xl, alignItems: 'center', gap: spacing.sm },
+  closeButton: { position: 'absolute', top: spacing.lg, right: spacing.lg },
   detailTitle: { fontSize: 22, fontWeight: '700', textAlign: 'center' },
-  detailSubtitle: { color: '#666' },
-  favoriteButton: { flexDirection: 'row', gap: 6, alignItems: 'center', paddingVertical: 12 },
-  favoriteButtonText: { color: '#c62828', fontWeight: '600' },
-  sectionTitle: { alignSelf: 'flex-start', fontWeight: '700', fontSize: 16, marginTop: 16 },
+  detailSubtitle: { color: colors.textMuted },
+  favoriteButton: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+  },
+  favoriteButtonText: { color: colors.danger, fontWeight: '600' },
+  sectionTitle: {
+    alignSelf: 'flex-start',
+    fontWeight: '700',
+    fontSize: 16,
+    marginTop: spacing.lg,
+  },
   ingredientRow: { alignSelf: 'flex-start' },
   stepRow: { alignSelf: 'flex-start', marginTop: 4 },
   addMissingButton: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginTop: 12,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.md,
   },
-  addMissingButtonText: { color: '#fff', fontWeight: '600' },
+  addMissingButtonText: { color: colors.white, fontWeight: '600' },
 });

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { i18n } from '../../i18n';
+import { colors, spacing } from '../../theme';
 import { estimateExpiryDate, toDateString } from '../../utils/expiry';
 import { baseToDefaultInput, INPUT_UNITS, toBaseUnit, type UnitFamily } from '../../utils/units';
 import { CategoryIcon } from './CategoryIcon';
@@ -108,7 +109,7 @@ export function InventoryItemForm({
           >
             <CategoryIcon
               icon={category.icon}
-              color={category.id === categoryId ? '#fff' : '#2e7d32'}
+              color={category.id === categoryId ? colors.white : colors.primary}
             />
             <Text style={[styles.chipText, category.id === categoryId && styles.chipTextSelected]}>
               {category.name}
@@ -147,7 +148,7 @@ export function InventoryItemForm({
       <Text style={styles.label}>{i18n.t('inventory.expiryDate')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="AAAA-MM-GG"
+        placeholder={i18n.t('inventory.expiryDatePlaceholder')}
         value={expiryDateText}
         onChangeText={(text) => {
           setExpiryDateText(text);
@@ -157,7 +158,7 @@ export function InventoryItemForm({
 
       <Pressable style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.white} />
         ) : (
           <Text style={styles.buttonText}>{submitLabel}</Text>
         )}
@@ -168,58 +169,58 @@ export function InventoryItemForm({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
-    gap: 8,
+    padding: spacing.xl,
+    gap: spacing.sm,
   },
   label: {
     fontWeight: '600',
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: spacing.sm,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     borderWidth: 1,
-    borderColor: '#2e7d32',
+    borderColor: colors.primary,
     borderRadius: 20,
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   chipSelected: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
   },
   chipText: {
-    color: '#2e7d32',
+    color: colors.primary,
   },
   chipTextSelected: {
-    color: '#fff',
+    color: colors.white,
   },
   quantityRow: {
-    gap: 8,
+    gap: spacing.sm,
   },
   quantityInput: {
     marginBottom: 4,
   },
   button: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
 });

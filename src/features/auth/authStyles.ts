@@ -1,36 +1,38 @@
 import { StyleSheet } from 'react-native';
 
+import { colors, spacing } from '../../theme';
+
 export const authStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 24,
-    gap: 12,
+    padding: spacing.xl,
+    gap: spacing.md,
   },
   title: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
   button: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
   link: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     alignSelf: 'center',
   },
   message: {

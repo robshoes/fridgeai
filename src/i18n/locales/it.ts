@@ -82,6 +82,7 @@ export default {
     category: 'Categoria',
     quantity: 'Quantità',
     expiryDate: 'Scadenza (AAAA-MM-GG)',
+    expiryDatePlaceholder: 'AAAA-MM-GG',
     save: 'Salva',
     delete: 'Elimina',
     deleteConfirmTitle: 'Eliminare alimento?',

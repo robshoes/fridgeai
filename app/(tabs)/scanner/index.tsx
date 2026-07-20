@@ -4,7 +4,16 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { useRewardedAd } from '../../../src/features/ads/useRewardedAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
@@ -16,8 +25,12 @@ import {
   grantScanBonus,
   uploadScanPhoto,
 } from '../../../src/features/scanner/api';
+import { usePulseAnimation } from '../../../src/hooks/usePulseAnimation';
 import { i18n } from '../../../src/i18n';
+import { colors, spacing } from '../../../src/theme';
 import { isNetworkError } from '../../../src/utils/network';
+
+const AnimatedIonicons = Animated.createAnimatedComponent(Ionicons);
 
 export default function ScannerScreen() {
   const { session } = useAuth();
@@ -27,6 +40,7 @@ export default function ScannerScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const { show: showRewardedAd } = useRewardedAd();
+  const pulseOpacity = usePulseAnimation();
   const isOnline = useOnline();
 
   const { data: usage } = useQuery({
@@ -145,6 +159,12 @@ export default function ScannerScreen() {
   if (isProcessing) {
     return (
       <View style={styles.centered}>
+        <AnimatedIonicons
+          name="sparkles-outline"
+          size={40}
+          color={colors.primary}
+          style={{ opacity: pulseOpacity }}
+        />
         <ActivityIndicator size="large" />
         <Text style={styles.processingText}>{i18n.t('scanner.analyzing')}</Text>
       </View>
@@ -190,7 +210,7 @@ export default function ScannerScreen() {
       )}
       <View style={styles.controls}>
         <Pressable style={styles.galleryButton} onPress={handlePickFromGallery}>
-          <Ionicons name="images-outline" size={28} color="#fff" />
+          <Ionicons name="images-outline" size={28} color={colors.white} />
         </Pressable>
         <Pressable style={styles.captureButton} onPress={handleCapture} />
         <View style={styles.spacer} />
@@ -200,16 +220,16 @@ export default function ScannerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: colors.black },
   camera: { flex: 1 },
   usageBadge: {
     position: 'absolute',
-    top: 16,
+    top: spacing.lg,
     alignSelf: 'center',
     backgroundColor: 'rgba(0,0,0,0.6)',
-    color: '#fff',
+    color: colors.white,
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     borderRadius: 12,
     overflow: 'hidden',
   },
@@ -217,23 +237,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    gap: 16,
+    padding: spacing.xl,
+    gap: spacing.lg,
   },
-  processingText: { color: '#666' },
+  processingText: { color: colors.textMuted },
   permissionText: { textAlign: 'center', fontSize: 16 },
   button: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xl,
   },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  secondaryButton: { paddingVertical: 8 },
-  secondaryButtonText: { color: '#2e7d32', fontWeight: '600' },
+  buttonText: { color: colors.white, fontWeight: '600' },
+  secondaryButton: { paddingVertical: spacing.sm },
+  secondaryButtonText: { color: colors.primary, fontWeight: '600' },
   controls: {
     position: 'absolute',
-    bottom: 32,
+    bottom: spacing.xxl,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -244,9 +264,9 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderWidth: 4,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
   },
   galleryButton: {
     width: 48,

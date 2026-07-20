@@ -13,6 +13,7 @@ import {
   type ShoppingListItem,
 } from '../src/features/shopping-list/api';
 import { i18n } from '../src/i18n';
+import { colors, spacing } from '../src/theme';
 import { showErrorAlert } from '../src/utils/network';
 
 export default function ShoppingListScreen() {
@@ -70,7 +71,7 @@ export default function ShoppingListScreen() {
           onSubmitEditing={handleAdd}
         />
         <Pressable style={styles.addButton} onPress={handleAdd} hitSlop={8}>
-          <Ionicons name="add" size={24} color="#fff" />
+          <Ionicons name="add" size={24} color={colors.white} />
         </Pressable>
       </View>
       <FlatList
@@ -107,12 +108,12 @@ function ShoppingListRow({
         <Ionicons
           name={item.is_checked ? 'checkbox' : 'square-outline'}
           size={22}
-          color="#2e7d32"
+          color={colors.primary}
         />
         <Text style={[styles.rowText, item.is_checked && styles.rowTextChecked]}>{item.name}</Text>
       </Pressable>
       <Pressable onPress={onDelete} hitSlop={8}>
-        <Ionicons name="trash-outline" size={20} color="#c62828" />
+        <Ionicons name="trash-outline" size={20} color={colors.danger} />
       </Pressable>
     </View>
   );
@@ -122,43 +123,43 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   addRow: {
     flexDirection: 'row',
-    gap: 8,
-    padding: 16,
+    gap: spacing.sm,
+    padding: spacing.lg,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  list: { paddingHorizontal: 16, gap: 8 },
+  list: { paddingHorizontal: spacing.lg, gap: spacing.sm },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: colors.border,
     borderRadius: 12,
-    padding: 12,
+    padding: spacing.md,
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.sm,
     flex: 1,
   },
   rowText: { flex: 1 },
   rowTextChecked: {
     textDecorationLine: 'line-through',
-    color: '#999',
+    color: colors.textFaint,
   },
 });

@@ -2,6 +2,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { useOnline } from '../features/network/NetworkProvider';
 import { i18n } from '../i18n';
+import { colors } from '../theme';
 
 // Ambient "you're offline" cue shown on every screen (PRD Fase 6: read-only
 // from cache, no writes/AI calls offline) — individual screens still show
@@ -16,8 +17,8 @@ export function OfflineBanner() {
 
 const styles = StyleSheet.create({
   banner: {
-    backgroundColor: '#c62828',
-    color: '#fff',
+    backgroundColor: colors.danger,
+    color: colors.white,
     textAlign: 'center',
     paddingVertical: 6,
     fontSize: 12,

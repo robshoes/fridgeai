@@ -2,6 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { colors, spacing } from '../theme';
+
 type Props = {
   icon: ComponentProps<typeof Ionicons>['name'];
   message: string;
@@ -14,7 +16,7 @@ type Props = {
 export function EmptyState({ icon, message, actionLabel, onAction }: Props) {
   return (
     <View style={styles.container}>
-      <Ionicons name={icon} size={40} color="#ccc" />
+      <Ionicons name={icon} size={40} color={colors.borderStrong} />
       <Text style={styles.message}>{message}</Text>
       {actionLabel && onAction && (
         <Pressable style={styles.button} onPress={onAction}>
@@ -29,22 +31,22 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
-    gap: 12,
+    padding: spacing.xxl,
+    gap: spacing.md,
   },
   message: {
     textAlign: 'center',
-    color: '#666',
+    color: colors.textMuted,
   },
   button: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#2e7d32',
+    paddingHorizontal: spacing.xl,
+    backgroundColor: colors.primary,
     borderRadius: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
 });

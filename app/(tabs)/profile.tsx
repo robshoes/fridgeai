@@ -19,6 +19,7 @@ import {
   type Profile,
 } from '../../src/features/profile/api';
 import { i18n } from '../../src/i18n';
+import { colors, spacing } from '../../src/theme';
 import { showErrorAlert } from '../../src/utils/network';
 
 export default function ProfileScreen() {
@@ -112,7 +113,7 @@ function ProfileForm({ userId, profile, authEmail }: ProfileFormProps) {
         disabled={saveMutation.isPending}
       >
         {saveMutation.isPending ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.white} />
         ) : (
           <Text style={styles.buttonText}>{i18n.t('profile.save')}</Text>
         )}
@@ -124,38 +125,38 @@ function ProfileForm({ userId, profile, authEmail }: ProfileFormProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
-    gap: 12,
+    padding: spacing.xl,
+    gap: spacing.md,
     justifyContent: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
   button: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
   logoutButton: {
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   logoutText: {
-    color: '#c62828',
+    color: colors.danger,
     fontWeight: '600',
   },
 });

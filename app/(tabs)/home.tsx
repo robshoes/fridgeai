@@ -2,9 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '../../src/components/EmptyState';
+import { Skeleton } from '../../src/components/Skeleton';
 import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../src/features/auth/AuthProvider';
 import { CategoryIcon } from '../../src/features/inventory/CategoryIcon';
@@ -13,6 +14,7 @@ import { getProfile } from '../../src/features/profile/api';
 import { generateRecipes } from '../../src/features/recipes/api';
 import { getLastScan } from '../../src/features/scanner/api';
 import { i18n } from '../../src/i18n';
+import { colors, spacing } from '../../src/theme';
 import { computeDisplayStatus } from '../../src/utils/expiry';
 
 export default function HomeScreen() {
@@ -58,7 +60,7 @@ export default function HomeScreen() {
       </Text>
 
       <Pressable style={styles.scanButton} onPress={() => router.push('/scanner')}>
-        <Ionicons name="camera-outline" size={22} color="#fff" />
+        <Ionicons name="camera-outline" size={22} color={colors.white} />
         <Text style={styles.scanButtonText}>{i18n.t('home.scanButton')}</Text>
       </Pressable>
 
@@ -99,7 +101,7 @@ export default function HomeScreen() {
             const category = item.category_id ? categoryById.get(item.category_id) : undefined;
             return (
               <View key={item.id} style={styles.row}>
-                {category && <CategoryIcon icon={category.icon} color="#f9a825" size={18} />}
+                {category && <CategoryIcon icon={category.icon} color={colors.warning} size={18} />}
                 <Text style={styles.rowText}>{item.name}</Text>
               </View>
             );
@@ -109,7 +111,10 @@ export default function HomeScreen() {
 
       <Section title={i18n.t('home.recommendedRecipes')} onViewAll={() => router.push('/recipes')}>
         {isLoadingRecipes ? (
-          <ActivityIndicator />
+          <View style={styles.skeletonLines}>
+            <Skeleton width="80%" height={14} />
+            <Skeleton width="60%" height={14} />
+          </View>
         ) : !recipes || recipes.length === 0 ? (
           <EmptyState icon="restaurant-outline" message={i18n.t('recipes.empty')} />
         ) : (
@@ -119,7 +124,7 @@ export default function HomeScreen() {
               style={styles.row}
               onPress={() => router.push('/recipes')}
             >
-              <Ionicons name="restaurant-outline" size={18} color="#2e7d32" />
+              <Ionicons name="restaurant-outline" size={18} color={colors.primary} />
               <Text style={styles.rowText}>{recipe.title}</Text>
             </Pressable>
           ))
@@ -142,7 +147,7 @@ function QuickLink({
 }) {
   return (
     <Pressable style={styles.quickLink} onPress={onPress}>
-      <Ionicons name={icon} size={22} color="#2e7d32" />
+      <Ionicons name={icon} size={22} color={colors.primary} />
       <Text style={styles.quickLinkText}>{label}</Text>
     </Pressable>
   );
@@ -173,26 +178,27 @@ function Section({
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 24, gap: 16 },
+  container: { padding: spacing.xl, gap: spacing.lg },
   greeting: { fontSize: 24, fontWeight: '700' },
   scanButton: {
     flexDirection: 'row',
-    gap: 8,
+    gap: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 14,
   },
-  scanButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  scanButtonText: { color: colors.white, fontWeight: '600', fontSize: 16 },
   quickLinks: { flexDirection: 'row', justifyContent: 'space-between' },
   quickLink: { alignItems: 'center', gap: 4 },
-  quickLinkText: { fontSize: 12, color: '#2e7d32', fontWeight: '600' },
-  section: { gap: 8 },
+  quickLinkText: { fontSize: 12, color: colors.primary, fontWeight: '600' },
+  section: { gap: spacing.sm },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sectionTitle: { fontSize: 16, fontWeight: '700' },
-  sectionText: { color: '#666' },
-  viewAll: { color: '#2e7d32', fontWeight: '600', fontSize: 12 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 },
+  sectionText: { color: colors.textMuted },
+  viewAll: { color: colors.primary, fontWeight: '600', fontSize: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 4 },
   rowText: { flex: 1 },
+  skeletonLines: { gap: 6 },
 });

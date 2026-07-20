@@ -2,18 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { EmptyState } from '../../../src/components/EmptyState';
+import { Skeleton } from '../../../src/components/Skeleton';
 import { AppBannerAd } from '../../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import {
@@ -25,15 +17,16 @@ import {
 } from '../../../src/features/inventory/api';
 import { CategoryIcon } from '../../../src/features/inventory/CategoryIcon';
 import { i18n } from '../../../src/i18n';
+import { colors, spacing } from '../../../src/theme';
 import { computeDisplayStatus, type InventoryStatus } from '../../../src/utils/expiry';
 import { showErrorAlert } from '../../../src/utils/network';
 import { formatQuantity, type UnitFamily } from '../../../src/utils/units';
 
 const STATUS_COLOR: Record<InventoryStatus, string> = {
-  fresh: '#2e7d32',
-  expiring_soon: '#f9a825',
-  expired: '#c62828',
-  consumed: '#9e9e9e',
+  fresh: colors.primary,
+  expiring_soon: colors.warning,
+  expired: colors.danger,
+  consumed: colors.disabled,
 };
 
 export default function InventoryListScreen() {
@@ -82,8 +75,11 @@ export default function InventoryListScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator />
+      <View style={styles.list}>
+        <InventoryRowSkeleton />
+        <InventoryRowSkeleton />
+        <InventoryRowSkeleton />
+        <InventoryRowSkeleton />
       </View>
     );
   }
@@ -125,52 +121,66 @@ export default function InventoryListScreen() {
                 {i18n.t(`inventory.status.${status}`)}
               </Text>
               <Pressable onPress={() => handleDelete(item)} hitSlop={8}>
-                <Ionicons name="trash-outline" size={20} color="#c62828" />
+                <Ionicons name="trash-outline" size={20} color={colors.danger} />
               </Pressable>
             </Pressable>
           );
         }}
       />
       <Pressable style={styles.fab} onPress={() => router.push('/inventory/new')}>
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons name="add" size={28} color={colors.white} />
       </Pressable>
       <AppBannerAd />
     </View>
   );
 }
 
+// Shown while the inventory query is loading — mirrors a real row's
+// icon + two text lines instead of a bare spinner (Fase 7 design system).
+function InventoryRowSkeleton() {
+  return (
+    <View style={styles.row}>
+      <Skeleton width={20} height={20} borderRadius={10} />
+      <View style={[styles.rowText, styles.skeletonLines]}>
+        <Skeleton width="60%" height={14} />
+        <Skeleton width="35%" height={12} />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   search: {
-    margin: 16,
+    margin: spacing.lg,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.borderStrong,
     borderRadius: 8,
-    padding: 12,
+    padding: spacing.md,
   },
-  list: { paddingHorizontal: 16, paddingBottom: 96, gap: 12 },
+  list: { paddingHorizontal: spacing.lg, paddingBottom: 96, gap: spacing.md },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: colors.border,
     borderRadius: 12,
-    padding: 12,
+    padding: spacing.md,
   },
   rowText: { flex: 1 },
+  skeletonLines: { gap: 6 },
   rowTitle: { fontWeight: '600' },
-  rowSubtitle: { color: '#666', fontSize: 12 },
+  rowSubtitle: { color: colors.textMuted, fontSize: 12 },
   statusBadge: { fontSize: 12, fontWeight: '600' },
   fab: {
     position: 'absolute',
-    right: 24,
-    bottom: 24,
+    right: spacing.xl,
+    bottom: spacing.xl,
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

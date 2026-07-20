@@ -4,7 +4,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -27,7 +26,9 @@ import {
   type ScanItem,
 } from '../../../src/features/scanner/api';
 import { i18n } from '../../../src/i18n';
+import { colors, spacing } from '../../../src/theme';
 import { estimateExpiryDate, toDateString } from '../../../src/utils/expiry';
+import { showErrorAlert } from '../../../src/utils/network';
 import { formatQuantity, type UnitFamily } from '../../../src/utils/units';
 
 type Row = {
@@ -145,7 +146,7 @@ function ResultsList({
       }
     },
     onSuccess: onDone,
-    onError: (error: Error) => Alert.alert(i18n.t('common.genericError'), error.message),
+    onError: showErrorAlert,
   });
 
   const includedCount = rows.filter((row) => row.included).length;
@@ -188,7 +189,7 @@ function ResultsList({
                   <Ionicons
                     name={row.included ? 'close-circle-outline' : 'add-circle-outline'}
                     size={22}
-                    color={row.included ? '#c62828' : '#2e7d32'}
+                    color={row.included ? colors.danger : colors.primary}
                   />
                 </Pressable>
               </View>
@@ -211,7 +212,7 @@ function ResultsList({
         disabled={confirmMutation.isPending || includedCount === 0}
       >
         {confirmMutation.isPending ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.white} />
         ) : (
           <Text style={styles.confirmButtonText}>{i18n.t('scanner.results.confirm')}</Text>
         )}
@@ -222,29 +223,35 @@ function ResultsList({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
-  secondaryButton: { paddingVertical: 8 },
-  secondaryButtonText: { color: '#2e7d32', fontWeight: '600' },
-  list: { padding: 16, gap: 12 },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    gap: spacing.lg,
+  },
+  secondaryButton: { paddingVertical: spacing.sm },
+  secondaryButtonText: { color: colors.primary, fontWeight: '600' },
+  list: { padding: spacing.lg, gap: spacing.md },
   card: {
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: colors.border,
     borderRadius: 12,
-    padding: 12,
+    padding: spacing.md,
     gap: 4,
   },
-  cardLowConfidence: { borderColor: '#f9a825' },
+  cardLowConfidence: { borderColor: colors.warning },
   cardExcluded: { opacity: 0.4 },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   nameInput: { flex: 1, fontWeight: '600' },
-  quantityText: { color: '#666', fontSize: 12 },
-  lowConfidenceBadge: { color: '#f9a825', fontSize: 12, fontWeight: '600' },
+  quantityText: { color: colors.textMuted, fontSize: 12 },
+  lowConfidenceBadge: { color: colors.warning, fontSize: 12, fontWeight: '600' },
   confirmButton: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
-    padding: 16,
+    padding: spacing.lg,
     alignItems: 'center',
-    margin: 16,
+    margin: spacing.lg,
   },
-  confirmButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  confirmButtonText: { color: colors.white, fontWeight: '600', fontSize: 16 },
 });

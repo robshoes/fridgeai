@@ -14,6 +14,7 @@ import {
   type InventoryItemFormValues,
 } from '../../../src/features/inventory/InventoryItemForm';
 import { i18n } from '../../../src/i18n';
+import { colors } from '../../../src/theme';
 import { showErrorAlert } from '../../../src/utils/network';
 import type { UnitFamily } from '../../../src/utils/units';
 
@@ -104,5 +105,5 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   deleteButton: { alignItems: 'center', paddingVertical: 16 },
-  deleteText: { color: '#c62828', fontWeight: '600' },
+  deleteText: { color: colors.danger, fontWeight: '600' },
 });

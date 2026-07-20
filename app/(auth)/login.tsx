@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'reac
 import { signIn } from '../../src/features/auth/api';
 import { authStyles } from '../../src/features/auth/authStyles';
 import { i18n } from '../../src/i18n';
+import { colors } from '../../src/theme';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function LoginScreen() {
       />
       <Pressable style={authStyles.button} onPress={handleSubmit} disabled={isSubmitting}>
         {isSubmitting ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.white} />
         ) : (
           <Text style={authStyles.buttonText}>{i18n.t('auth.login.submit')}</Text>
         )}

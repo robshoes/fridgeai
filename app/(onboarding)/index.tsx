@@ -2,6 +2,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useOnboarding } from '../../src/features/onboarding/storage';
 import { i18n } from '../../src/i18n';
+import { colors, spacing, typography } from '../../src/theme';
 
 export default function OnboardingScreen() {
   const { markSeen } = useOnboarding();
@@ -23,31 +24,31 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    gap: 12,
+    padding: spacing.xl,
+    gap: spacing.md,
   },
   logo: {
     width: 96,
     height: 96,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   title: {
+    ...typography.title,
     fontSize: 28,
-    fontWeight: '700',
   },
   description: {
     textAlign: 'center',
-    fontSize: 16,
-    marginBottom: 24,
+    ...typography.body,
+    marginBottom: spacing.xl,
   },
   button: {
-    backgroundColor: '#2e7d32',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing.xxl,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
 });
