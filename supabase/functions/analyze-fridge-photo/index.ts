@@ -184,6 +184,21 @@ export default {
         .update({ status: 'completed', raw_ai_response: openAiJson })
         .eq('id', scan_id);
 
+      // Best-effort: a logging failure must not turn an otherwise-successful
+      // scan into a reported failure (see Fase 8 §Dashboard/alert costi AI).
+      try {
+        await ctx.supabaseAdmin.from('openai_usage_log').insert({
+          function_name: 'analyze-fridge-photo',
+          user_id: userId,
+          model: MODEL,
+          prompt_tokens: openAiJson.usage?.prompt_tokens ?? 0,
+          completion_tokens: openAiJson.usage?.completion_tokens ?? 0,
+          total_tokens: openAiJson.usage?.total_tokens ?? 0,
+        });
+      } catch {
+        // Ignored — see comment above.
+      }
+
       return Response.json({
         items: scanItemsToInsert,
         lowConfidenceThreshold: CONFIDENCE_THRESHOLD,

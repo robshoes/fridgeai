@@ -142,6 +142,22 @@ export default {
     const openAiJson = await openAiResponse.json();
     const result = JSON.parse(openAiJson.choices[0].message.content);
 
+    // Best-effort: a logging failure must not block returning the recipes
+    // that were already successfully generated (see Fase 8 §Dashboard/alert
+    // costi AI).
+    try {
+      await ctx.supabaseAdmin.from('openai_usage_log').insert({
+        function_name: 'generate-recipes',
+        user_id: userId,
+        model: MODEL,
+        prompt_tokens: openAiJson.usage?.prompt_tokens ?? 0,
+        completion_tokens: openAiJson.usage?.completion_tokens ?? 0,
+        total_tokens: openAiJson.usage?.total_tokens ?? 0,
+      });
+    } catch {
+      // Ignored — see comment above.
+    }
+
     const expiresAt = new Date(Date.now() + CACHE_TTL_HOURS * 60 * 60 * 1000).toISOString();
     await ctx.supabaseAdmin
       .from('recipe_cache')

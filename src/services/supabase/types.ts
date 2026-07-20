@@ -117,6 +117,39 @@ export type Database = {
           },
         ];
       };
+      openai_usage_log: {
+        Row: {
+          completion_tokens: number;
+          created_at: string;
+          function_name: string;
+          id: string;
+          model: string;
+          prompt_tokens: number;
+          total_tokens: number;
+          user_id: string | null;
+        };
+        Insert: {
+          completion_tokens: number;
+          created_at?: string;
+          function_name: string;
+          id?: string;
+          model: string;
+          prompt_tokens: number;
+          total_tokens: number;
+          user_id?: string | null;
+        };
+        Update: {
+          completion_tokens?: number;
+          created_at?: string;
+          function_name?: string;
+          id?: string;
+          model?: string;
+          prompt_tokens?: number;
+          total_tokens?: number;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -320,7 +353,18 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      openai_usage_daily: {
+        Row: {
+          calls: number | null;
+          completion_tokens: number | null;
+          day: string | null;
+          function_name: string | null;
+          model: string | null;
+          prompt_tokens: number | null;
+          total_tokens: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       [_ in never]: never;
