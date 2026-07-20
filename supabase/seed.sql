@@ -1,0 +1,3 @@
+-- Seed data for local development.
+-- `categories` lookup data (with default_shelf_life_days, unit_family) is
+-- added here once the table is created in Fase 2 — see docs/04-roadmap.md.
