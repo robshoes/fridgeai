@@ -4,6 +4,7 @@ dist/
 web-build/
 android/
 ios/
+supabase/.temp/
 expo-env.d.ts
 package-lock.json
 

@@ -8,6 +8,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'fridgeai',
   slug: 'fridgeai',
+  owner: 'fridgeai-app',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -37,22 +38,25 @@ const config: ExpoConfig = {
     [
       '@sentry/react-native/expo',
       {
-        // organization/project/url enable automatic source map upload during
-        // EAS builds (via SENTRY_AUTH_TOKEN as an EAS secret) — add them once
-        // the Sentry project exists. Crash/error reporting itself works
-        // without them, as long as EXPO_PUBLIC_SENTRY_DSN is set.
+        organization: 'fridgeai-yn',
+        project: 'fridgeai',
+        // Also needs SENTRY_AUTH_TOKEN as an EAS secret to actually upload
+        // source maps during builds — crash/error reporting itself works
+        // without it, as long as EXPO_PUBLIC_SENTRY_DSN is set.
       },
     ],
   ],
   extra: {
     eas: {
-      // Not a secret — `eas init` overwrites this with the real project id
-      // once the project is linked to an EAS account.
-      projectId: 'REPLACE_WITH_EAS_PROJECT_ID',
+      projectId: '4f8f698d-9282-4115-814a-ad92b256edcc',
     },
   },
-  // `eas update:configure` fills in `updates.url` and `runtimeVersion`
-  // automatically once the project is linked — left out until then.
+  updates: {
+    url: 'https://u.expo.dev/4f8f698d-9282-4115-814a-ad92b256edcc',
+  },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
 };
 
 export default config;
