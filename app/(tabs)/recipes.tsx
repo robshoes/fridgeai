@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../src/components/EmptyState';
 import { Skeleton } from '../../src/components/Skeleton';
@@ -49,6 +50,7 @@ const TIME_FILTERS = [15, 30, 60];
 type ViewMode = 'all' | 'favorites';
 
 export default function RecipesScreen() {
+  const insets = useSafeAreaInsets();
   const { session } = useAuth();
   const userId = session!.user.id;
   const queryClient = useQueryClient();
@@ -138,7 +140,7 @@ export default function RecipesScreen() {
   }, [view, recipes, favorites, maxTime, maxDifficulty]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.viewToggle}>
         <Pressable
           style={[styles.toggleChip, view === 'all' && styles.toggleChipActive]}

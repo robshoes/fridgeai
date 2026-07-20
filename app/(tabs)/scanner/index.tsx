@@ -14,6 +14,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRewardedAd } from '../../../src/features/ads/useRewardedAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
@@ -33,6 +34,7 @@ import { isNetworkError } from '../../../src/utils/network';
 const AnimatedIonicons = Animated.createAnimatedComponent(Ionicons);
 
 export default function ScannerScreen() {
+  const insets = useSafeAreaInsets();
   const { session } = useAuth();
   const userId = session!.user.id;
   const queryClient = useQueryClient();
@@ -204,7 +206,7 @@ export default function ScannerScreen() {
     <View style={styles.container}>
       <CameraView ref={cameraRef} style={styles.camera} />
       {usage && (
-        <Text style={styles.usageBadge}>
+        <Text style={[styles.usageBadge, { top: insets.top + spacing.lg }]}>
           {i18n.t('scanner.remaining', { count: Math.max(usage.limit - usage.used, 0) })}
         </Text>
       )}

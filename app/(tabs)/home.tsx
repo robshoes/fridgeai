@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../src/components/EmptyState';
 import { Skeleton } from '../../src/components/Skeleton';
@@ -18,6 +19,7 @@ import { colors, spacing } from '../../src/theme';
 import { computeDisplayStatus } from '../../src/utils/expiry';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { session } = useAuth();
   const userId = session!.user.id;
 
@@ -52,7 +54,7 @@ export default function HomeScreen() {
   }, [inventory]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { paddingTop: insets.top + spacing.xl }]}>
       <Text style={styles.greeting}>
         {profile?.full_name
           ? i18n.t('home.greeting', { name: profile.full_name })

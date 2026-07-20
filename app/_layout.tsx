@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { OfflineBanner } from '../src/components/OfflineBanner';
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
@@ -20,18 +21,20 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <NetworkProvider>
-        <AuthProvider>
-          <OnboardingProvider>
-            <View style={{ flex: 1 }}>
-              <OfflineBanner />
-              <RootNavigator />
-            </View>
-          </OnboardingProvider>
-        </AuthProvider>
-      </NetworkProvider>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <NetworkProvider>
+          <AuthProvider>
+            <OnboardingProvider>
+              <View style={{ flex: 1 }}>
+                <OfflineBanner />
+                <RootNavigator />
+              </View>
+            </OnboardingProvider>
+          </AuthProvider>
+        </NetworkProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 
