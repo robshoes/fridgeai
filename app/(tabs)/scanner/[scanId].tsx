@@ -89,6 +89,7 @@ export default function ScanResultsScreen() {
       categories={categories}
       onDone={() => {
         queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+        queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
         router.replace('/inventory');
       }}
     />

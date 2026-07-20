@@ -45,6 +45,7 @@ export default function EditInventoryItemScreen() {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+      await queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
       router.back();
     },
     onError: showErrorAlert,
@@ -54,6 +55,7 @@ export default function EditInventoryItemScreen() {
     mutationFn: () => deleteInventoryItem(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+      await queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
       router.back();
     },
     onError: showErrorAlert,

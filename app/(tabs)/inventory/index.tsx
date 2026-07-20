@@ -43,7 +43,10 @@ export default function InventoryListScreen() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteInventoryItem(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['inventory', userId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+      queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
+    },
     onError: showErrorAlert,
   });
 

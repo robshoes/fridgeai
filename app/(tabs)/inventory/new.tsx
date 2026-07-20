@@ -34,6 +34,7 @@ export default function NewInventoryItemScreen() {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+      await queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
       router.back();
     },
     onError: showErrorAlert,
