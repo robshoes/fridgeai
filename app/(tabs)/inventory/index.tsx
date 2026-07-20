@@ -92,44 +92,51 @@ export default function InventoryListScreen() {
         value={search}
         onChangeText={setSearch}
       />
-      <FlatList
-        data={filteredItems}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        ListEmptyComponent={
-          <EmptyState
-            icon="basket-outline"
-            message={i18n.t('inventory.empty')}
-            actionLabel={i18n.t('inventory.addTitle')}
-            onAction={() => router.push('/inventory/new')}
-          />
-        }
-        renderItem={({ item }) => {
-          const category = item.category_id ? categoryById.get(item.category_id) : undefined;
-          const status = computeDisplayStatus(item.expiry_date, item.status);
-          return (
-            <Pressable style={styles.row} onPress={() => router.push(`/inventory/${item.id}`)}>
-              {category && <CategoryIcon icon={category.icon} />}
-              <View style={styles.rowText}>
-                <Text style={styles.rowTitle}>{item.name}</Text>
-                <Text style={styles.rowSubtitle}>
-                  {formatQuantity(item.quantity, item.unit_family as UnitFamily)}
-                  {category ? ` · ${category.name}` : ''}
+      <View style={styles.listArea}>
+        <FlatList
+          data={filteredItems}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          ListEmptyComponent={
+            <EmptyState
+              icon="basket-outline"
+              message={i18n.t('inventory.empty')}
+              actionLabel={i18n.t('inventory.addTitle')}
+              onAction={() => router.push('/inventory/new')}
+            />
+          }
+          renderItem={({ item }) => {
+            const category = item.category_id ? categoryById.get(item.category_id) : undefined;
+            const status = computeDisplayStatus(item.expiry_date, item.status);
+            return (
+              <Pressable style={styles.row} onPress={() => router.push(`/inventory/${item.id}`)}>
+                {category && <CategoryIcon icon={category.icon} />}
+                <View style={styles.rowText}>
+                  <Text style={styles.rowTitle}>{item.name}</Text>
+                  <Text style={styles.rowSubtitle}>
+                    {formatQuantity(item.quantity, item.unit_family as UnitFamily)}
+                    {category ? ` · ${category.name}` : ''}
+                  </Text>
+                </View>
+                <Text style={[styles.statusBadge, { color: STATUS_COLOR[status] }]}>
+                  {i18n.t(`inventory.status.${status}`)}
                 </Text>
-              </View>
-              <Text style={[styles.statusBadge, { color: STATUS_COLOR[status] }]}>
-                {i18n.t(`inventory.status.${status}`)}
-              </Text>
-              <Pressable onPress={() => handleDelete(item)} hitSlop={8}>
-                <Ionicons name="trash-outline" size={20} color={colors.danger} />
+                <Pressable onPress={() => handleDelete(item)} hitSlop={8}>
+                  <Ionicons name="trash-outline" size={20} color={colors.danger} />
+                </Pressable>
               </Pressable>
-            </Pressable>
-          );
-        }}
-      />
-      <Pressable style={styles.fab} onPress={() => router.push('/inventory/new')}>
-        <Ionicons name="add" size={28} color={colors.white} />
-      </Pressable>
+            );
+          }}
+        />
+        {/* The AdMob banner below is a native view that composites above
+            RN's own layers regardless of JSX order or z-index, so an
+            absolutely-positioned FAB in the same container as the ad
+            gets visually clipped by it. Scoping the FAB's absolute
+            positioning to this ad-free wrapper keeps it above the ad. */}
+        <Pressable style={styles.fab} onPress={() => router.push('/inventory/new')}>
+          <Ionicons name="add" size={28} color={colors.white} />
+        </Pressable>
+      </View>
       <AppBannerAd />
     </View>
   );
@@ -158,6 +165,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: spacing.md,
   },
+  listArea: { flex: 1 },
   list: { paddingHorizontal: spacing.lg, paddingBottom: 96, gap: spacing.md },
   row: {
     flexDirection: 'row',
