@@ -26,6 +26,7 @@ import {
   type ScanItem,
 } from '../../../src/features/scanner/api';
 import { i18n } from '../../../src/i18n';
+import { track } from '../../../src/services/analytics';
 import { colors, spacing } from '../../../src/theme';
 import { estimateExpiryDate, toDateString } from '../../../src/utils/expiry';
 import { showErrorAlert } from '../../../src/utils/network';
@@ -143,6 +144,7 @@ function ResultsList({
           expiry_source: estimated ? 'category_estimate' : 'none',
           source_scan_id: scanId,
         });
+        track('inventory_item_confirmed', { source: 'scan' });
         await updateScanItemStatus(row.scanItemId, row.edited ? 'edited' : 'confirmed');
       }
     },

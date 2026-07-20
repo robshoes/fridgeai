@@ -9,6 +9,7 @@ import {
   type InventoryItemFormValues,
 } from '../../../src/features/inventory/InventoryItemForm';
 import { i18n } from '../../../src/i18n';
+import { track } from '../../../src/services/analytics';
 import { showErrorAlert } from '../../../src/utils/network';
 
 export default function NewInventoryItemScreen() {
@@ -35,6 +36,7 @@ export default function NewInventoryItemScreen() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
       await queryClient.invalidateQueries({ queryKey: ['recipes', userId] });
+      track('inventory_item_confirmed', { source: 'manual' });
       router.back();
     },
     onError: showErrorAlert,

@@ -28,6 +28,7 @@ import {
 } from '../../../src/features/scanner/api';
 import { usePulseAnimation } from '../../../src/hooks/usePulseAnimation';
 import { i18n } from '../../../src/i18n';
+import { track } from '../../../src/services/analytics';
 import { colors, spacing } from '../../../src/theme';
 import { isNetworkError } from '../../../src/utils/network';
 
@@ -94,6 +95,7 @@ export default function ScannerScreen() {
       }
       return;
     }
+    track('scan_completed', { itemCount: result.items.length });
     router.push(`/scanner/${scanId}`);
   };
 

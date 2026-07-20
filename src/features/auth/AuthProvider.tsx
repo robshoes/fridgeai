@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
 
+import { identifyUser, resetAnalytics } from '../../services/analytics';
 import { supabase } from '../../services/supabase/client';
 
 type AuthContextValue = {
@@ -26,12 +27,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setIsLoading(false);
+      if (data.session) {
+        identifyUser(data.session.user.id);
+      }
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      if (newSession) {
+        identifyUser(newSession.user.id);
+      } else {
+        resetAnalytics();
+      }
     });
 
     return () => subscription.unsubscribe();

@@ -5,6 +5,7 @@ import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'reac
 import { signUp } from '../../src/features/auth/api';
 import { authStyles } from '../../src/features/auth/authStyles';
 import { i18n } from '../../src/i18n';
+import { track } from '../../src/services/analytics';
 import { colors } from '../../src/theme';
 
 export default function RegisterScreen() {
@@ -22,6 +23,7 @@ export default function RegisterScreen() {
       Alert.alert(i18n.t('common.genericError'), error.message);
       return;
     }
+    track('user_registered');
     if (!data.session) {
       // Email confirmation required before the session becomes active.
       setConfirmationSent(true);

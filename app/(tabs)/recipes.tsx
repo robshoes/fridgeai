@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -30,6 +30,7 @@ import {
 } from '../../src/features/recipes/api';
 import { addIngredientsToShoppingList } from '../../src/features/shopping-list/api';
 import { i18n } from '../../src/i18n';
+import { track } from '../../src/services/analytics';
 import { colors, spacing } from '../../src/theme';
 import { showErrorAlert } from '../../src/utils/network';
 
@@ -111,6 +112,7 @@ export default function RecipesScreen() {
     },
     onSuccess: ({ addedCount, skippedCount }) => {
       queryClient.invalidateQueries({ queryKey: ['shopping-list', userId] });
+      track('shopping_list_generated', { addedCount, skippedCount });
       Alert.alert(
         skippedCount > 0
           ? i18n.t('recipes.addedToShoppingListPartial', {
@@ -294,6 +296,10 @@ function RecipeDetail({
   onClose: () => void;
 }) {
   const missing = recipe.ingredients.filter((ingredient) => !ingredient.have);
+
+  useEffect(() => {
+    track('recipe_viewed', { title: recipe.title, category: recipe.category });
+  }, [recipe.title, recipe.category]);
 
   return (
     <ScrollView contentContainerStyle={styles.detailContainer}>

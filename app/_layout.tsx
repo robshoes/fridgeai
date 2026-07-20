@@ -11,9 +11,11 @@ import { initAds } from '../src/features/ads/initAds';
 import { NetworkProvider } from '../src/features/network/NetworkProvider';
 import { OnboardingProvider, useOnboarding } from '../src/features/onboarding/storage';
 import { i18n } from '../src/i18n';
+import { initAnalytics } from '../src/services/analytics';
 import { initSentry } from '../src/services/sentry';
 
 initSentry();
+initAnalytics();
 initAds();
 SplashScreen.preventAutoHideAsync();
 
