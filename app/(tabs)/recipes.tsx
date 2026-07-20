@@ -16,7 +16,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../src/components/EmptyState';
 import { Skeleton } from '../../src/components/Skeleton';
-import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../src/features/auth/AuthProvider';
 import { useOnline } from '../../src/features/network/NetworkProvider';
 import {
@@ -257,8 +256,6 @@ export default function RecipesScreen() {
           }}
         />
       )}
-
-      <AppBannerAd />
 
       <Modal
         visible={selectedRecipe !== null}

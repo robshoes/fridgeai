@@ -2,9 +2,7 @@ import '@supabase/functions-js/edge-runtime.d.ts';
 import { withSupabase } from '@supabase/server';
 import { encodeBase64 } from '@std/encoding/base64';
 
-// PRD §Controllo dei costi AI: 10 scans/day base, +5 per rewarded ad
-// watched, capped at 2 ads/day (enforced at grant time by the
-// scan_bonus_grants RLS policy, see the Fase 3 migration).
+// PRD §Controllo dei costi AI: flat 10 scans/day per user, no bonus mechanism.
 const BASE_DAILY_LIMIT = 10;
 // PRD §Gestione errori AI: items below this confidence are flagged for
 // manual review instead of silently trusted.
@@ -85,14 +83,7 @@ export default {
       .eq('user_id', userId)
       .gte('created_at', todayStartIso);
 
-    const { data: bonusGrants } = await ctx.supabaseAdmin
-      .from('scan_bonus_grants')
-      .select('amount')
-      .eq('user_id', userId)
-      .gte('granted_at', todayStartIso);
-
-    const bonusToday = (bonusGrants ?? []).reduce((sum, grant) => sum + grant.amount, 0);
-    const dailyLimit = BASE_DAILY_LIMIT + bonusToday;
+    const dailyLimit = BASE_DAILY_LIMIT;
 
     if ((scansToday ?? 0) > dailyLimit) {
       await ctx.supabaseAdmin.from('scans').update({ status: 'failed' }).eq('id', scan_id);

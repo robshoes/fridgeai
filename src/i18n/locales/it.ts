@@ -131,9 +131,7 @@ export default {
     },
     rateLimited: {
       title: 'Limite scansioni raggiunto',
-      message: 'Hai raggiunto il limite di %{limit} scansioni per oggi.',
-      watchAd: 'Guarda un video per +5 scansioni',
-      tryTomorrow: 'Riprova domani',
+      message: 'Hai raggiunto il limite di %{limit} scansioni per oggi. Riprova domani.',
     },
   },
   recipes: {

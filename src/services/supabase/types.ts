@@ -198,27 +198,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      scan_bonus_grants: {
-        Row: {
-          amount: number;
-          granted_at: string;
-          id: string;
-          user_id: string;
-        };
-        Insert: {
-          amount?: number;
-          granted_at?: string;
-          id?: string;
-          user_id: string;
-        };
-        Update: {
-          amount?: number;
-          granted_at?: string;
-          id?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       scan_items: {
         Row: {
           category_id: string | null;

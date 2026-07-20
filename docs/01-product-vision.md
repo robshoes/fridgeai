@@ -127,7 +127,6 @@ Persone tra 25 e 45 anni che cucinano regolarmente e vogliono semplificare la ge
 * OpenAI API
 * PostHog (analytics)
 * Sentry (error tracking)
-* Google AdMob (pubblicità)
 
 ---
 
@@ -143,12 +142,9 @@ Persone tra 25 e 45 anni che cucinano regolarmente e vogliono semplificare la ge
 
 # Monetizzazione
 
-L'MVP è gratuito per l'utente e finanziato da pubblicità (Google AdMob), non da un abbonamento:
+L'MVP non prevede alcuna monetizzazione: nessuna pubblicità, nessun abbonamento. Il costo variabile OpenAI è contenuto dai controlli descritti in PRD §Controllo dei costi AI (limite fisso di scansioni/giorno, caching delle ricette) e sostenuto direttamente, non finanziato da terzi.
 
-* Banner pubblicitario nelle schermate Home e Inventario.
-* Video con ricompensa: guardando un annuncio l'utente sblocca scansioni aggiuntive oltre al limite giornaliero gratuito (vedi PRD §Controllo dei costi AI per i numeri esatti).
-
-Nessun piano a pagamento è previsto per la v1; potrà essere rivalutato dopo il lancio sulla base dei KPI raccolti (vedi Roadmap).
+Un modello di monetizzazione (abbonamento o pubblicità) potrà essere rivalutato dopo il lancio sulla base dei KPI raccolti (vedi Roadmap).
 
 ---
 
@@ -173,7 +169,7 @@ Nessun piano a pagamento è previsto per la v1; potrà essere rivalutato dopo il
 
 Nota: l'esclusione di "Modalità offline" riguarda la possibilità di modificare, scansionare o generare ricette senza connessione. La sola visualizzazione in lettura dei dati già sincronizzati (inventario, lista della spesa) resta disponibile da cache locale anche senza connessione: non è considerata una "modalità offline" ma un requisito minimo di resilienza (vedi PRD).
 
-L'MVP non prevede abbonamenti né livelli di utenza a pagamento (vedi §Monetizzazione per il modello ad-supported): il limite giornaliero di scansioni si applica a tutti gli utenti allo stesso modo, ampliabile solo guardando un video pubblicitario, non pagando.
+L'MVP non prevede abbonamenti né livelli di utenza a pagamento (vedi §Monetizzazione): il limite giornaliero di scansioni è fisso e si applica a tutti gli utenti allo stesso modo, senza alcun meccanismo per ampliarlo.
 
 ---
 
@@ -187,8 +183,6 @@ L'MVP non prevede abbonamenti né livelli di utenza a pagamento (vedi §Monetizz
 * Liste della spesa generate
 * Tasso di ritorno degli utenti
 * Riduzione stimata degli sprechi alimentari
-* Impression banner pubblicitari
-* Video rewarded completati (scansioni bonus sbloccate)
 
 Tutti i KPI sono misurati tramite un unico strumento di analytics (PostHog), con eventi mappati direttamente su ciascuna metrica.
 

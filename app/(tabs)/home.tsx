@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyState } from '../../src/components/EmptyState';
 import { Skeleton } from '../../src/components/Skeleton';
-import { AppBannerAd } from '../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../src/features/auth/AuthProvider';
 import { CategoryIcon } from '../../src/features/inventory/CategoryIcon';
 import { listCategories, listInventoryItems } from '../../src/features/inventory/api';
@@ -132,8 +131,6 @@ export default function HomeScreen() {
           ))
         )}
       </Section>
-
-      <AppBannerAd />
     </ScrollView>
   );
 }

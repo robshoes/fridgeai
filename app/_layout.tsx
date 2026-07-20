@@ -7,7 +7,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { OfflineBanner } from '../src/components/OfflineBanner';
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
-import { initAds } from '../src/features/ads/initAds';
 import { NetworkProvider } from '../src/features/network/NetworkProvider';
 import { OnboardingProvider, useOnboarding } from '../src/features/onboarding/storage';
 import { i18n } from '../src/i18n';
@@ -16,7 +15,6 @@ import { initSentry } from '../src/services/sentry';
 
 initSentry();
 initAnalytics();
-initAds();
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();

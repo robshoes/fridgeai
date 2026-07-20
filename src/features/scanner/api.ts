@@ -25,15 +25,7 @@ export async function getScanUsageToday(userId: string): Promise<{ used: number;
     .eq('user_id', userId)
     .gte('created_at', todayStartIso);
 
-  const { data: bonusGrants } = await supabase
-    .from('scan_bonus_grants')
-    .select('amount')
-    .eq('user_id', userId)
-    .gte('granted_at', todayStartIso);
-
-  const bonus = (bonusGrants ?? []).reduce((sum, grant) => sum + grant.amount, 0);
-
-  return { used: used ?? 0, limit: BASE_DAILY_LIMIT + bonus };
+  return { used: used ?? 0, limit: BASE_DAILY_LIMIT };
 }
 
 export async function uploadScanPhoto(userId: string, localUri: string): Promise<string> {
@@ -86,11 +78,6 @@ export async function updateScanItemStatus(
   status: 'confirmed' | 'edited' | 'rejected',
 ) {
   const { error } = await supabase.from('scan_items').update({ status }).eq('id', id);
-  if (error) throw error;
-}
-
-export async function grantScanBonus(userId: string) {
-  const { error } = await supabase.from('scan_bonus_grants').insert({ user_id: userId });
   if (error) throw error;
 }
 

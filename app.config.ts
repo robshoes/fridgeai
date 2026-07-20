@@ -6,12 +6,6 @@ import type { ExpoConfig } from 'expo/config';
 // here: they go through EXPO_PUBLIC_* vars in .env, inlined directly into
 // process.env at build time (see .env.example).
 
-// Google's official test AdMob app IDs — safe defaults so the app works
-// out of the box before a real AdMob account exists. Override via env
-// once the user creates one (see .env.example).
-const ADMOB_ANDROID_APP_ID_TEST = 'ca-app-pub-3940256099942544~3347511713';
-const ADMOB_IOS_APP_ID_TEST = 'ca-app-pub-3940256099942544~1458002511';
-
 const config: ExpoConfig = {
   name: 'KangKong',
   slug: 'fridgeai',
@@ -78,15 +72,6 @@ const config: ExpoConfig = {
         // Also needs SENTRY_AUTH_TOKEN as an EAS secret to actually upload
         // source maps during builds — crash/error reporting itself works
         // without it, as long as EXPO_PUBLIC_SENTRY_DSN is set.
-      },
-    ],
-    [
-      'react-native-google-mobile-ads',
-      {
-        // `||` (not `??`): an empty string from a copied .env.example line
-        // must also fall back to the test ID, not just an unset var.
-        androidAppId: process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID || ADMOB_ANDROID_APP_ID_TEST,
-        iosAppId: process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID || ADMOB_IOS_APP_ID_TEST,
       },
     ],
   ],

@@ -6,7 +6,6 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'r
 
 import { EmptyState } from '../../../src/components/EmptyState';
 import { Skeleton } from '../../../src/components/Skeleton';
-import { AppBannerAd } from '../../../src/features/ads/AppBannerAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import {
   deleteInventoryItem,
@@ -131,16 +130,10 @@ export default function InventoryListScreen() {
             );
           }}
         />
-        {/* The AdMob banner below is a native view that composites above
-            RN's own layers regardless of JSX order or z-index, so an
-            absolutely-positioned FAB in the same container as the ad
-            gets visually clipped by it. Scoping the FAB's absolute
-            positioning to this ad-free wrapper keeps it above the ad. */}
         <Pressable style={styles.fab} onPress={() => router.push('/inventory/new')}>
           <Ionicons name="add" size={28} color={colors.white} />
         </Pressable>
       </View>
-      <AppBannerAd />
     </View>
   );
 }

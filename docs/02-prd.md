@@ -215,9 +215,6 @@ Database:
 Analytics:
 - PostHog
 
-Monetizzazione:
-- Google AdMob (banner + video con ricompensa)
-
 ---
 
 # MVP
@@ -381,26 +378,15 @@ Le immagini non saranno mai pubbliche.
 
 ## Controllo dei costi AI
 
-L'MVP non prevede un abbonamento né piani a pagamento differenziati: i limiti sotto si applicano a tutti gli utenti allo stesso modo. Il costo variabile OpenAI generato dagli utenti gratuiti è finanziato dalla pubblicità (vedi §Monetizzazione pubblicitaria), non da un piano a pagamento.
+L'MVP non prevede un abbonamento né piani a pagamento differenziati né pubblicità: i limiti sotto si applicano a tutti gli utenti allo stesso modo e sono l'unico meccanismo di controllo del costo variabile OpenAI.
 
 Per limitare i costi operativi:
 
-- limite di base di 10 scansioni al giorno per utente; superato il limite, lo Scanner mostra un messaggio con il numero di scansioni residue, l'orario di reset (mezzanotte, fuso orario del dispositivo) e l'opzione per sbloccarne altre guardando un video pubblicitario (vedi §Monetizzazione pubblicitaria);
+- limite fisso di 10 scansioni al giorno per utente, senza alcun modo di ampliarlo; superato il limite, lo Scanner mostra un messaggio con l'orario di reset (mezzanotte, fuso orario del dispositivo);
 - soglia di confidenza AI fissata a 0.7 per marcare un elemento come "da verificare" (vedi §Gestione errori AI);
 - caching delle ricette, basato su corrispondenza esatta della combinazione di ingredienti (vedi §Generazione delle ricette);
 - nessuna nuova richiesta AI se la combinazione di ingredienti non è cambiata;
 - tutte le chiamate AI passeranno attraverso Supabase Edge Functions.
-
----
-
-## Monetizzazione pubblicitaria
-
-L'MVP è gratuito e finanziato da Google AdMob, non da abbonamenti:
-
-- **Banner**: mostrato in modo permanente nelle schermate Home e Inventario.
-- **Video con ricompensa**: guardando un video pubblicitario per intero, l'utente ottiene **+5 scansioni bonus** oltre al limite giornaliero di base. Massimo **2 video al giorno per utente** (quindi al massimo +10 scansioni bonus, per un totale di 20 scansioni/giorno). Il contatore si azzera a mezzanotte insieme al limite di base.
-- Se il video non viene completato (chiuso in anticipo), nessuna scansione bonus viene concessa.
-- Nessuna pubblicità viene mostrata durante il flusso di scansione stesso (scatto foto → analisi → conferma), per non interrompere il percorso principale del prodotto.
 
 ---
 

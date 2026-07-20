@@ -49,15 +49,11 @@ Principio guida: **costruire prima ciò che è testabile senza AI**, per validar
 
 ---
 
-# Fase 2.5 — Monetizzazione pubblicitaria
+# Fase 2.5 — Monetizzazione pubblicitaria (rimossa)
 
-**Obiettivo**: introdurre il modello ad-supported prima ancora che esista un costo AI da finanziare, così la Fase 3 nasce già con la relativa infrastruttura pronta.
+Implementata (banner AdMob in Home/Inventario/Ricette, video rewarded per +5 scansioni bonus fino a 2/giorno) e successivamente rimossa nella sua interezza: l'MVP non prevede alcuna forma di pubblicità. Il controllo dei costi AI si basa solo sul limite fisso di scansioni/giorno (Fase 3) e sul caching delle ricette (Fase 4), senza alcun meccanismo di sblocco bonus.
 
-- Integrazione `react-native-google-mobile-ads` (richiede development build EAS, non funziona in Expo Go).
-- Banner pubblicitario in Home e Inventario.
-- Componente/hook riutilizzabile per il video con ricompensa (caricamento, visualizzazione, callback di ricompensa) — non ancora collegato a un contatore scansioni, perché quel contatore non esiste finché non arriva la Fase 3.
-
-**Output**: pubblicità banner attiva e funzionante; infrastruttura del video rewarded pronta da collegare in Fase 3.
+**Output**: nessuno — fase interamente rimossa.
 
 ---
 
@@ -71,7 +67,7 @@ Principio guida: **costruire prima ciò che è testabile senza AI**, per validar
 - Edge Function `analyze-fridge-photo` (chiamata OpenAI con structured output, soglia di confidenza, scrittura `scan_items`).
 - Schermata "Risultati AI": elenco riconosciuto, confidenza, modifica/eliminazione, gestione caso "nessun alimento riconosciuto".
 - Conferma → scrittura in `inventory_items` con unità normalizzata e scadenza stimata.
-- Rate limiting scansioni giornaliere lato Edge Function (limite di base 10/giorno per utente, +5 per video rewarded completato fino a 2/giorno — collega il componente già costruito in Fase 2.5 a un contatore scansioni giornaliero per utente).
+- Rate limiting scansioni giornaliere lato Edge Function (limite fisso di 10/giorno per utente, senza meccanismo di sblocco bonus — vedi Fase 2.5).
 - Gestione minima di assenza di connessione durante lo Scanner (messaggio di errore chiaro, nessun crash, nessuno stato di caricamento infinito): sufficiente da sola a rispettare i requisiti non funzionali del PRD per questa fase. L'esperienza offline completa su tutte le schermate viene rifinita in Fase 6.
 
 **Output**: flusso completo "scatta foto → AI → conferma → inventario" funzionante e testato.
@@ -151,7 +147,7 @@ Pubblicazione su App Store / Play Store. Qualsiasi funzionalità non inclusa in 
 # Note di sequenziamento
 
 - La Fase 2 (inventario manuale) precede deliberatamente la Fase 3 (AI): disaccoppia lo sviluppo di schema dati e UI dal costo e dall'incertezza delle chiamate OpenAI, e produce un'app già utilizzabile a metà roadmap.
-- La Fase 2.5 (ads) precede deliberatamente la Fase 3 per lo stesso motivo inverso: il meccanismo che finanzia il costo AI (pubblicità) è pronto prima che quel costo esista, così la Fase 3 lo trova già disponibile invece di dover costruire tutto insieme.
+- La Fase 2.5 (ads) è stata rimossa per intero in un secondo momento: non finanzia più nulla, il costo AI resta contenuto solo dai controlli di Fase 3/4.
 - Le Fasi 3 e 4 sono le uniche a introdurre costi variabili (OpenAI): vanno sempre accompagnate dai relativi controlli (rate limit, cache) definiti nello stesso rilascio, non aggiunti in un secondo momento.
 - La Fase 3 include già la gestione minima di assenza di connessione per lo Scanner (nessun crash, messaggio d'errore chiaro), sufficiente a rispettare i requisiti non funzionali del PRD fin da quella fase. La Fase 6 non è quindi un prerequisito mancante per la Fase 3: estende lo stesso comportamento a tutte le schermate (lettura da cache, empty state) e va comunque completata prima della beta, non posticipata dopo.
 

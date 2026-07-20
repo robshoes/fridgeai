@@ -16,14 +16,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useRewardedAd } from '../../../src/features/ads/useRewardedAd';
 import { useAuth } from '../../../src/features/auth/AuthProvider';
 import { useOnline } from '../../../src/features/network/NetworkProvider';
 import {
   analyzeScan,
   createScan,
   getScanUsageToday,
-  grantScanBonus,
   uploadScanPhoto,
 } from '../../../src/features/scanner/api';
 import { usePulseAnimation } from '../../../src/hooks/usePulseAnimation';
@@ -42,7 +40,6 @@ export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { show: showRewardedAd } = useRewardedAd();
   const pulseOpacity = usePulseAnimation();
   const isOnline = useOnline();
 
@@ -89,58 +86,14 @@ export default function ScannerScreen() {
     const result = await analyzeScan(scanId);
     invalidateUsage();
     if ('rateLimited' in result) {
-      const unlockedMore = await promptRateLimited(result.dailyLimit);
-      if (unlockedMore) {
-        return runAnalysis(scanId);
-      }
+      Alert.alert(
+        i18n.t('scanner.rateLimited.title'),
+        i18n.t('scanner.rateLimited.message', { limit: result.dailyLimit }),
+      );
       return;
     }
     track('scan_completed', { itemCount: result.items.length });
     router.push(`/scanner/${scanId}`);
-  };
-
-  // PRD §Monetizzazione pubblicitaria: watching a rewarded ad grants +5
-  // scans (capped at 2/day, enforced by the scan_bonus_grants RLS policy
-  // — grantScanBonus below simply fails once that cap is hit).
-  const promptRateLimited = (dailyLimit: number): Promise<boolean> => {
-    return new Promise((resolve) => {
-      Alert.alert(
-        i18n.t('scanner.rateLimited.title'),
-        i18n.t('scanner.rateLimited.message', { limit: dailyLimit }),
-        [
-          {
-            text: i18n.t('scanner.rateLimited.tryTomorrow'),
-            style: 'cancel',
-            onPress: () => resolve(false),
-          },
-          {
-            text: i18n.t('scanner.rateLimited.watchAd'),
-            onPress: async () => {
-              try {
-                const adResult = await showRewardedAd();
-                if (!adResult.earnedReward) {
-                  resolve(false);
-                  return;
-                }
-                await grantScanBonus(userId);
-                invalidateUsage();
-                resolve(true);
-              } catch (error) {
-                if (isNetworkError(error)) {
-                  Alert.alert(i18n.t('common.networkError'));
-                } else {
-                  Alert.alert(
-                    i18n.t('common.genericError'),
-                    error instanceof Error ? error.message : '',
-                  );
-                }
-                resolve(false);
-              }
-            },
-          },
-        ],
-      );
-    });
   };
 
   const handleCapture = async () => {
