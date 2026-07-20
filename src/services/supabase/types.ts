@@ -66,6 +66,7 @@ export type Database = {
           id: string;
           name: string;
           quantity: number;
+          source_scan_id: string | null;
           status: Database['public']['Enums']['inventory_status'];
           unit_family: Database['public']['Enums']['unit_family'];
           updated_at: string;
@@ -79,6 +80,7 @@ export type Database = {
           id?: string;
           name: string;
           quantity: number;
+          source_scan_id?: string | null;
           status?: Database['public']['Enums']['inventory_status'];
           unit_family: Database['public']['Enums']['unit_family'];
           updated_at?: string;
@@ -92,6 +94,7 @@ export type Database = {
           id?: string;
           name?: string;
           quantity?: number;
+          source_scan_id?: string | null;
           status?: Database['public']['Enums']['inventory_status'];
           unit_family?: Database['public']['Enums']['unit_family'];
           updated_at?: string;
@@ -103,6 +106,13 @@ export type Database = {
             columns: ['category_id'];
             isOneToOne: false;
             referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'inventory_items_source_scan_id_fkey';
+            columns: ['source_scan_id'];
+            isOneToOne: false;
+            referencedRelation: 'scans';
             referencedColumns: ['id'];
           },
         ];
@@ -128,6 +138,102 @@ export type Database = {
           full_name?: string | null;
           id?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      scan_bonus_grants: {
+        Row: {
+          amount: number;
+          granted_at: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          amount?: number;
+          granted_at?: string;
+          id?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          granted_at?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      scan_items: {
+        Row: {
+          category_id: string | null;
+          confidence: number;
+          detected_name: string;
+          id: string;
+          quantity_estimate: number;
+          scan_id: string;
+          status: Database['public']['Enums']['scan_item_status'];
+          unit_family: Database['public']['Enums']['unit_family'];
+        };
+        Insert: {
+          category_id?: string | null;
+          confidence: number;
+          detected_name: string;
+          id?: string;
+          quantity_estimate: number;
+          scan_id: string;
+          status?: Database['public']['Enums']['scan_item_status'];
+          unit_family: Database['public']['Enums']['unit_family'];
+        };
+        Update: {
+          category_id?: string | null;
+          confidence?: number;
+          detected_name?: string;
+          id?: string;
+          quantity_estimate?: number;
+          scan_id?: string;
+          status?: Database['public']['Enums']['scan_item_status'];
+          unit_family?: Database['public']['Enums']['unit_family'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'scan_items_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'scan_items_scan_id_fkey';
+            columns: ['scan_id'];
+            isOneToOne: false;
+            referencedRelation: 'scans';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      scans: {
+        Row: {
+          created_at: string;
+          id: string;
+          image_path: string;
+          raw_ai_response: Json | null;
+          status: Database['public']['Enums']['scan_status'];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          image_path: string;
+          raw_ai_response?: Json | null;
+          status?: Database['public']['Enums']['scan_status'];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          image_path?: string;
+          raw_ai_response?: Json | null;
+          status?: Database['public']['Enums']['scan_status'];
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -177,6 +283,8 @@ export type Database = {
     Enums: {
       expiry_source: 'manual' | 'category_estimate' | 'none';
       inventory_status: 'fresh' | 'expiring_soon' | 'expired' | 'consumed';
+      scan_item_status: 'pending' | 'confirmed' | 'edited' | 'rejected';
+      scan_status: 'pending' | 'processing' | 'completed' | 'failed';
       shopping_list_source: 'manual' | 'auto_from_recipe';
       unit_family: 'weight' | 'volume' | 'count';
     };
@@ -305,6 +413,8 @@ export const Constants = {
     Enums: {
       expiry_source: ['manual', 'category_estimate', 'none'],
       inventory_status: ['fresh', 'expiring_soon', 'expired', 'consumed'],
+      scan_item_status: ['pending', 'confirmed', 'edited', 'rejected'],
+      scan_status: ['pending', 'processing', 'completed', 'failed'],
       shopping_list_source: ['manual', 'auto_from_recipe'],
       unit_family: ['weight', 'volume', 'count'],
     },

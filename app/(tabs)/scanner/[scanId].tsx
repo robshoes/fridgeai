@@ -1,0 +1,255 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+import { useAuth } from '../../../src/features/auth/AuthProvider';
+import {
+  listCategories,
+  createInventoryItem,
+  type Category,
+} from '../../../src/features/inventory/api';
+import { CategoryIcon } from '../../../src/features/inventory/CategoryIcon';
+import {
+  listScanItems,
+  updateScanItemStatus,
+  type ScanItem,
+} from '../../../src/features/scanner/api';
+import { i18n } from '../../../src/i18n';
+import { estimateExpiryDate, toDateString } from '../../../src/utils/expiry';
+import { formatQuantity, type UnitFamily } from '../../../src/utils/units';
+
+type Row = {
+  scanItemId: string;
+  name: string;
+  categoryId: string | null;
+  quantity: number;
+  unitFamily: UnitFamily;
+  confidence: number;
+  included: boolean;
+  edited: boolean;
+};
+
+export default function ScanResultsScreen() {
+  const { scanId } = useLocalSearchParams<{ scanId: string }>();
+  const { session } = useAuth();
+  const userId = session!.user.id;
+  const queryClient = useQueryClient();
+
+  const { data: scanItems, isLoading: isLoadingItems } = useQuery({
+    queryKey: ['scan-items', scanId],
+    queryFn: () => listScanItems(scanId),
+  });
+  const { data: categories, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: listCategories,
+  });
+
+  if (isLoadingItems || isLoadingCategories || !scanItems || !categories) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (scanItems.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.emptyText}>{i18n.t('scanner.results.noItemsFound')}</Text>
+        <Pressable style={styles.button} onPress={() => router.replace('/scanner')}>
+          <Text style={styles.buttonText}>{i18n.t('scanner.results.retry')}</Text>
+        </Pressable>
+        <Pressable style={styles.secondaryButton} onPress={() => router.push('/inventory/new')}>
+          <Text style={styles.secondaryButtonText}>{i18n.t('scanner.results.addManually')}</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <ResultsList
+      scanId={scanId}
+      userId={userId}
+      scanItems={scanItems}
+      categories={categories}
+      onDone={() => {
+        queryClient.invalidateQueries({ queryKey: ['inventory', userId] });
+        router.replace('/inventory');
+      }}
+    />
+  );
+}
+
+function ResultsList({
+  scanId,
+  userId,
+  scanItems,
+  categories,
+  onDone,
+}: {
+  scanId: string;
+  userId: string;
+  scanItems: ScanItem[];
+  categories: Category[];
+  onDone: () => void;
+}) {
+  const [rows, setRows] = useState<Row[]>(() =>
+    scanItems.map((item) => ({
+      scanItemId: item.id,
+      name: item.detected_name,
+      categoryId: item.category_id,
+      quantity: item.quantity_estimate,
+      unitFamily: item.unit_family as UnitFamily,
+      confidence: item.confidence,
+      included: true,
+      edited: false,
+    })),
+  );
+
+  const confirmMutation = useMutation({
+    mutationFn: async () => {
+      for (const row of rows) {
+        if (!row.included) {
+          await updateScanItemStatus(row.scanItemId, 'rejected');
+          continue;
+        }
+
+        const category = categories.find((c) => c.id === row.categoryId) ?? null;
+        const estimated = category ? estimateExpiryDate(category.default_shelf_life_days) : null;
+
+        await createInventoryItem({
+          user_id: userId,
+          name: row.name,
+          category_id: row.categoryId,
+          quantity: row.quantity,
+          unit_family: row.unitFamily,
+          expiry_date: estimated ? toDateString(estimated) : null,
+          expiry_source: estimated ? 'category_estimate' : 'none',
+          source_scan_id: scanId,
+        });
+        await updateScanItemStatus(row.scanItemId, row.edited ? 'edited' : 'confirmed');
+      }
+    },
+    onSuccess: onDone,
+    onError: (error: Error) => Alert.alert(i18n.t('common.genericError'), error.message),
+  });
+
+  const includedCount = rows.filter((row) => row.included).length;
+
+  return (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.list}>
+        {rows.map((row, index) => {
+          const category = categories.find((c) => c.id === row.categoryId);
+          const isLowConfidence = row.confidence < 0.7;
+          return (
+            <View
+              key={row.scanItemId}
+              style={[
+                styles.card,
+                isLowConfidence && styles.cardLowConfidence,
+                !row.included && styles.cardExcluded,
+              ]}
+            >
+              <View style={styles.cardHeader}>
+                {category && <CategoryIcon icon={category.icon} />}
+                <TextInput
+                  style={styles.nameInput}
+                  value={row.name}
+                  editable={row.included}
+                  onChangeText={(text) =>
+                    setRows((prev) =>
+                      prev.map((r, i) => (i === index ? { ...r, name: text, edited: true } : r)),
+                    )
+                  }
+                />
+                <Pressable
+                  onPress={() =>
+                    setRows((prev) =>
+                      prev.map((r, i) => (i === index ? { ...r, included: !r.included } : r)),
+                    )
+                  }
+                  hitSlop={8}
+                >
+                  <Ionicons
+                    name={row.included ? 'close-circle-outline' : 'add-circle-outline'}
+                    size={22}
+                    color={row.included ? '#c62828' : '#2e7d32'}
+                  />
+                </Pressable>
+              </View>
+              <Text style={styles.quantityText}>
+                {formatQuantity(row.quantity, row.unitFamily)}
+                {category ? ` · ${category.name}` : ''}
+              </Text>
+              {isLowConfidence && (
+                <Text style={styles.lowConfidenceBadge}>
+                  {i18n.t('scanner.results.lowConfidence')}
+                </Text>
+              )}
+            </View>
+          );
+        })}
+      </ScrollView>
+      <Pressable
+        style={styles.confirmButton}
+        onPress={() => confirmMutation.mutate()}
+        disabled={confirmMutation.isPending || includedCount === 0}
+      >
+        {confirmMutation.isPending ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.confirmButtonText}>{i18n.t('scanner.results.confirm')}</Text>
+        )}
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
+  emptyText: { textAlign: 'center', fontSize: 16 },
+  button: {
+    backgroundColor: '#2e7d32',
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+  },
+  buttonText: { color: '#fff', fontWeight: '600' },
+  secondaryButton: { paddingVertical: 8 },
+  secondaryButtonText: { color: '#2e7d32', fontWeight: '600' },
+  list: { padding: 16, gap: 12 },
+  card: {
+    borderWidth: 1,
+    borderColor: '#eee',
+    borderRadius: 12,
+    padding: 12,
+    gap: 4,
+  },
+  cardLowConfidence: { borderColor: '#f9a825' },
+  cardExcluded: { opacity: 0.4 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  nameInput: { flex: 1, fontWeight: '600' },
+  quantityText: { color: '#666', fontSize: 12 },
+  lowConfidenceBadge: { color: '#f9a825', fontSize: 12, fontWeight: '600' },
+  confirmButton: {
+    backgroundColor: '#2e7d32',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    margin: 16,
+  },
+  confirmButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+});

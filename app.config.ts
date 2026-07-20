@@ -47,6 +47,30 @@ const config: ExpoConfig = {
     'expo-splash-screen',
     'expo-font',
     [
+      'expo-camera',
+      {
+        cameraPermission:
+          'FridgeAI usa la fotocamera per scattare foto del frigorifero e riconoscerne il contenuto.',
+        recordAudioAndroid: false,
+        barcodeScannerEnabled: false,
+      },
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'FridgeAI accede alla galleria per scegliere una foto del frigorifero al posto della fotocamera.',
+        // No cameraPermission here: `false` actively strips the manifest
+        // entry, which also removes the CAMERA permission expo-camera's
+        // own plugin just added (manifest merge doesn't care which plugin
+        // ran first). We only use this package for the gallery picker,
+        // never its own camera launcher, so we just omit that option
+        // instead of disabling it. microphonePermission is safe to disable
+        // outright: nothing in the app needs audio.
+        microphonePermission: false,
+      },
+    ],
+    [
       '@sentry/react-native/expo',
       {
         organization: 'fridgeai-yn',

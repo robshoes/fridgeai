@@ -412,3 +412,16 @@ enabled = true
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+[functions.analyze-fridge-photo]
+enabled = true
+# withSupabase's `auth: 'user'` mode relies on the platform validating the
+# JWT before the handler runs — must stay true.
+verify_jwt = true
+import_map = "./functions/analyze-fridge-photo/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/analyze-fridge-photo/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/analyze-fridge-photo/*.html" ]

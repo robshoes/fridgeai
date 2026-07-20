@@ -6,6 +6,7 @@ export default {
     appName: 'FridgeAI',
     loading: 'Caricamento…',
     genericError: 'Qualcosa è andato storto. Riprova.',
+    networkError: 'Nessuna connessione a Internet. Riprova quando torni online.',
     comingSoon: 'Questa sezione sarà disponibile in una prossima fase.',
     cancel: 'Annulla',
   },
@@ -80,5 +81,30 @@ export default {
     addPlaceholder: 'Aggiungi un articolo…',
     empty: 'La lista della spesa è vuota.',
     delete: 'Elimina',
+  },
+  scanner: {
+    permissionExplanation:
+      'FridgeAI ha bisogno della fotocamera per riconoscere gli alimenti. Puoi concederla dalle impostazioni, oppure scegliere una foto dalla galleria.',
+    grantPermission: 'Consenti fotocamera',
+    openSettings: 'Apri impostazioni',
+    pickFromGallery: 'Scegli dalla galleria',
+    uploading: 'Caricamento in corso…',
+    analyzing: 'Analisi AI in corso…',
+    remaining: 'Scansioni rimaste oggi: %{count}',
+    results: {
+      title: 'Risultati AI',
+      lowConfidence: 'Da verificare',
+      noItemsFound: 'Non abbiamo riconosciuto alimenti in questa foto.',
+      retry: 'Riprova',
+      addManually: 'Aggiungi manualmente',
+      confirm: 'Conferma',
+      remove: 'Elimina',
+    },
+    rateLimited: {
+      title: 'Limite scansioni raggiunto',
+      message: 'Hai raggiunto il limite di %{limit} scansioni per oggi.',
+      watchAd: 'Guarda un video per +5 scansioni',
+      tryTomorrow: 'Riprova domani',
+    },
   },
 };

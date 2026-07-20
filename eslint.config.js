@@ -7,6 +7,8 @@ module.exports = defineConfig([
   expoConfig,
   prettierConfig,
   {
-    ignores: ['dist/*'],
+    // Deno runtime (Edge Functions): different module resolution/globals,
+    // linted separately via `deno lint` rather than this ESLint config.
+    ignores: ['dist/*', 'supabase/functions/**'],
   },
 ]);
