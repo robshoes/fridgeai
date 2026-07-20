@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAuth } from '../src/features/auth/AuthProvider';
 import {
-  createShoppingListItem,
+  addShoppingListItem,
   deleteShoppingListItem,
   listShoppingListItems,
   setShoppingListItemChecked,
@@ -26,10 +26,13 @@ export default function ShoppingListScreen() {
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['shopping-list', userId] });
 
-  const createMutation = useMutation({
-    mutationFn: (name: string) => createShoppingListItem(userId, name),
-    onSuccess: () => {
+  const addMutation = useMutation({
+    mutationFn: (name: string) => addShoppingListItem(userId, name),
+    onSuccess: ({ added }) => {
       setNewItemName('');
+      if (!added) {
+        Alert.alert(i18n.t('shoppingList.alreadyPresent'));
+      }
       invalidate();
     },
   });
@@ -48,7 +51,7 @@ export default function ShoppingListScreen() {
   const handleAdd = () => {
     const name = newItemName.trim();
     if (!name) return;
-    createMutation.mutate(name);
+    addMutation.mutate(name);
   };
 
   return (

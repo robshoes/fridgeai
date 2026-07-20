@@ -24,7 +24,7 @@ import {
   type RecipeCategory,
   type RecipeDifficulty,
 } from '../../src/features/recipes/api';
-import { createShoppingListItem } from '../../src/features/shopping-list/api';
+import { addIngredientsToShoppingList } from '../../src/features/shopping-list/api';
 import { i18n } from '../../src/i18n';
 
 const CATEGORY_ICONS: Record<RecipeCategory, React.ComponentProps<typeof Ionicons>['name']> = {
@@ -91,13 +91,23 @@ export default function RecipesScreen() {
   };
 
   const addMissingMutation = useMutation({
-    mutationFn: async (recipe: Recipe) => {
-      const missing = recipe.ingredients.filter((ingredient) => !ingredient.have);
-      for (const ingredient of missing) {
-        await createShoppingListItem(userId, ingredient.name);
-      }
+    mutationFn: (recipe: Recipe) => {
+      const missingNames = recipe.ingredients
+        .filter((ingredient) => !ingredient.have)
+        .map((ingredient) => ingredient.name);
+      return addIngredientsToShoppingList(userId, missingNames, 'auto_from_recipe');
     },
-    onSuccess: () => Alert.alert(i18n.t('recipes.addedToShoppingList')),
+    onSuccess: ({ addedCount, skippedCount }) => {
+      queryClient.invalidateQueries({ queryKey: ['shopping-list', userId] });
+      Alert.alert(
+        skippedCount > 0
+          ? i18n.t('recipes.addedToShoppingListPartial', {
+              added: addedCount,
+              skipped: skippedCount,
+            })
+          : i18n.t('recipes.addedToShoppingList'),
+      );
+    },
     onError: (error: Error) => Alert.alert(i18n.t('common.genericError'), error.message),
   });
 

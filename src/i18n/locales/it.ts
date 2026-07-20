@@ -81,6 +81,7 @@ export default {
     addPlaceholder: 'Aggiungi un articolo…',
     empty: 'La lista della spesa è vuota.',
     delete: 'Elimina',
+    alreadyPresent: 'Questo articolo è già nella lista della spesa.',
   },
   scanner: {
     permissionExplanation:
@@ -121,6 +122,8 @@ export default {
     steps: 'Preparazione',
     addMissingToShoppingList: 'Aggiungi mancanti alla lista della spesa',
     addedToShoppingList: 'Ingredienti aggiunti alla lista della spesa',
+    addedToShoppingListPartial:
+      '%{added} ingredienti aggiunti, %{skipped} già presenti nella lista della spesa',
     save: 'Salva nei preferiti',
     unsave: 'Rimuovi dai preferiti',
     category: {
