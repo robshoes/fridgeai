@@ -8,7 +8,6 @@ export default {
     genericError: 'Qualcosa è andato storto. Riprova.',
     networkError: 'Nessuna connessione a Internet. Riprova quando torni online.',
     offlineBanner: 'Sei offline — i dati mostrati potrebbero non essere aggiornati.',
-    comingSoon: 'Questa sezione sarà disponibile in una prossima fase.',
     cancel: 'Annulla',
   },
   onboarding: {
