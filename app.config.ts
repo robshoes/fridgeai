@@ -35,6 +35,8 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-localization',
+    'expo-splash-screen',
+    'expo-font',
     [
       '@sentry/react-native/expo',
       {
