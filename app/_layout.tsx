@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 
 import { AuthProvider, useAuth } from '../src/features/auth/AuthProvider';
 import { OnboardingProvider, useOnboarding } from '../src/features/onboarding/storage';
+import { i18n } from '../src/i18n';
 import { initSentry } from '../src/services/sentry';
 
 initSentry();
@@ -49,6 +50,10 @@ function RootNavigator() {
       </Stack.Protected>
       <Stack.Protected guard={onboardingSeen && !!session}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="shopping-list"
+          options={{ headerShown: true, title: i18n.t('shoppingList.title') }}
+        />
       </Stack.Protected>
     </Stack>
   );

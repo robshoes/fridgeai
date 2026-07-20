@@ -33,6 +33,80 @@ export type Database = {
   };
   public: {
     Tables: {
+      categories: {
+        Row: {
+          default_shelf_life_days: number | null;
+          icon: string;
+          id: string;
+          name: string;
+          unit_family: Database['public']['Enums']['unit_family'];
+        };
+        Insert: {
+          default_shelf_life_days?: number | null;
+          icon: string;
+          id?: string;
+          name: string;
+          unit_family: Database['public']['Enums']['unit_family'];
+        };
+        Update: {
+          default_shelf_life_days?: number | null;
+          icon?: string;
+          id?: string;
+          name?: string;
+          unit_family?: Database['public']['Enums']['unit_family'];
+        };
+        Relationships: [];
+      };
+      inventory_items: {
+        Row: {
+          category_id: string | null;
+          created_at: string;
+          expiry_date: string | null;
+          expiry_source: Database['public']['Enums']['expiry_source'];
+          id: string;
+          name: string;
+          quantity: number;
+          status: Database['public']['Enums']['inventory_status'];
+          unit_family: Database['public']['Enums']['unit_family'];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          category_id?: string | null;
+          created_at?: string;
+          expiry_date?: string | null;
+          expiry_source?: Database['public']['Enums']['expiry_source'];
+          id?: string;
+          name: string;
+          quantity: number;
+          status?: Database['public']['Enums']['inventory_status'];
+          unit_family: Database['public']['Enums']['unit_family'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          category_id?: string | null;
+          created_at?: string;
+          expiry_date?: string | null;
+          expiry_source?: Database['public']['Enums']['expiry_source'];
+          id?: string;
+          name?: string;
+          quantity?: number;
+          status?: Database['public']['Enums']['inventory_status'];
+          unit_family?: Database['public']['Enums']['unit_family'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'inventory_items_category_id_fkey';
+            columns: ['category_id'];
+            isOneToOne: false;
+            referencedRelation: 'categories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -57,6 +131,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      shopping_list_items: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_checked: boolean;
+          name: string;
+          quantity: number | null;
+          source: Database['public']['Enums']['shopping_list_source'];
+          unit_family: Database['public']['Enums']['unit_family'] | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_checked?: boolean;
+          name: string;
+          quantity?: number | null;
+          source?: Database['public']['Enums']['shopping_list_source'];
+          unit_family?: Database['public']['Enums']['unit_family'] | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_checked?: boolean;
+          name?: string;
+          quantity?: number | null;
+          source?: Database['public']['Enums']['shopping_list_source'];
+          unit_family?: Database['public']['Enums']['unit_family'] | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -65,7 +175,10 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      expiry_source: 'manual' | 'category_estimate' | 'none';
+      inventory_status: 'fresh' | 'expiring_soon' | 'expired' | 'consumed';
+      shopping_list_source: 'manual' | 'auto_from_recipe';
+      unit_family: 'weight' | 'volume' | 'count';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -189,6 +302,11 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      expiry_source: ['manual', 'category_estimate', 'none'],
+      inventory_status: ['fresh', 'expiring_soon', 'expired', 'consumed'],
+      shopping_list_source: ['manual', 'auto_from_recipe'],
+      unit_family: ['weight', 'volume', 'count'],
+    },
   },
 } as const;
