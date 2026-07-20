@@ -141,6 +141,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      recipe_cache: {
+        Row: {
+          created_at: string;
+          expires_at: string;
+          id: string;
+          ingredients_hash: string;
+          response: Json;
+        };
+        Insert: {
+          created_at?: string;
+          expires_at: string;
+          id?: string;
+          ingredients_hash: string;
+          response: Json;
+        };
+        Update: {
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          ingredients_hash?: string;
+          response?: Json;
+        };
+        Relationships: [];
+      };
       scan_bonus_grants: {
         Row: {
           amount: number;
@@ -269,6 +293,27 @@ export type Database = {
           source?: Database['public']['Enums']['shopping_list_source'];
           unit_family?: Database['public']['Enums']['unit_family'] | null;
           updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_recipe_favorites: {
+        Row: {
+          created_at: string;
+          id: string;
+          recipe_snapshot: Json;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          recipe_snapshot: Json;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          recipe_snapshot?: Json;
           user_id?: string;
         };
         Relationships: [];

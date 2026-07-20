@@ -425,3 +425,16 @@ entrypoint = "./functions/analyze-fridge-photo/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/analyze-fridge-photo/*.html" ]
+
+[functions.generate-recipes]
+enabled = true
+# Same reasoning as analyze-fridge-photo: withSupabase's `auth: 'user'`
+# mode needs the platform to validate the JWT before the handler runs.
+verify_jwt = true
+import_map = "./functions/generate-recipes/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/generate-recipes/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/generate-recipes/*.html" ]

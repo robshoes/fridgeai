@@ -189,7 +189,8 @@ Tutte le tabelle utente-specifiche hanno **Row Level Security attiva**, con poli
 ### `user_recipe_favorites` *(uniche righe ricetta persistite lato utente)*
 | Campo | Tipo | Note |
 |---|---|---|
-| user_id | uuid, FK → profiles | PK composita |
+| id | uuid, PK | un utente può avere più preferiti: `user_id` da solo non basta come chiave |
+| user_id | uuid, FK → profiles | |
 | recipe_snapshot | jsonb | ricetta generata, salvata solo se l'utente la mette tra i preferiti |
 | created_at | timestamptz | |
 
